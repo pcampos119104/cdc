@@ -1,0 +1,58 @@
+# The name that will be show in Github
+name: CI
+
+# Enable Buildkit and let compose use it to speed up image building
+env:
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+
+# This jobs will run when a pull request is made for the main branch.
+on:
+  pull_request:
+    branches: [ "main" ]
+
+  push:
+    branches: [ "main" ]
+
+jobs:
+  # This is the job that is going to run the `just test` command.
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # git clone the repo in this ubuntu runner
+      - name: Checkout Code Repository
+        uses: actions/checkout@v3
+
+      # Add just command for running the tests
+      - name: Add just
+        uses: extractions/setup-just@v2
+
+      # The .env is on .gitignore, so it's needed to be created here
+      - name: Create env file
+        run: |
+          touch .env
+          echo DEBUG=true > .env
+          echo SECRET_KEY=0m8HMl9crvazciYYD58znKmuQaQAFT8q >> .env
+          echo ENVIRONMENT=dev >> .env
+          echo ALLOWED_HOSTS=* >> .env
+          echo DB_NAME=postgres >> .env
+          echo DB_USER=postgres >> .env
+          echo DB_PASSWORD=postgres >> .env
+          echo DB_HOST=postgres >> .env
+          echo DB_PORT=5432 >> .env
+          echo CSRF_TRUSTED_ORIGINS=http://localhost >> .env
+          cat .env
+
+      - name: Build the Stack
+        run: just build
+
+      - name: Run DB Migrations
+        run: just mng migrate
+
+      - name: Run tests
+        run: just test
+
+      - name: Tear down the Stack
+        run: just down

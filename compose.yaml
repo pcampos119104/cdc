@@ -1,0 +1,46 @@
+services:
+# The service to be created on docker
+  app:
+    # how to build the image for this service
+    build:
+      # Where is the directory to work on...
+      context: .
+      # ... with what Dockerfile instructions
+      dockerfile: ./docker/dev/dev.Dockerfile
+    image: cdc_local
+    container_name: cdc_local
+    # Make the code accessible for the container.
+    volumes:
+      - .:/app:z
+      - /app/.venv
+      - /app/node_modules
+    # your .env based on .env.template
+    env_file:
+      - .env
+    # Open the port in localhost:8000 and 2718 for external access
+    ports:
+      - "8000:8000"
+      - "2718:2718"
+    # Only start this image after postgres
+    depends_on:
+      - postgres
+    # The bash file to execute, the one created above and added to Dockerfile
+    command: xonsh /start.xsh
+
+  postgres:
+    # The postgres image from docker hub
+    image: postgres:16.2
+    container_name: cdc_postgres
+    # The volume that will be used by this image
+    volumes:
+      - cdc_postgres_data:/var/lib/postgresql/data
+    # Open the port in localhost:5432 for external access
+    ports:
+      - "5432:5432"
+    # db NAME, USER and HOST are by default 'postgres', just configure the password here
+    environment:
+      POSTGRES_PASSWORD: postgres
+
+volumes:
+    # Volume used by the postgres container
+    cdc_postgres_data: { }

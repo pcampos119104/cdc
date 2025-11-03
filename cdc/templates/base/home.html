@@ -1,0 +1,49 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0">
+    <!-- Tailwind output file -->
+    <link
+            href="{% static 'css/output.css' %}"
+            rel="stylesheet">
+    <script
+            src="{% static 'js/alpine.min.js' %}"
+            defer></script>
+    <script
+            src="{% static 'js/htmx.min.js' %}"
+            defer></script>
+    <title>Title</title>
+</head>
+<body>
+<h1>Simple Header without tailwind</h1>
+<h1 class="text-3xl font-bold p-10">Simple Tailwind header</h1>
+<hr>
+<h1 class="text-3xl font-bold pt-10 px-10">Simple AlpineJS counter</h1>
+<div x-data="{ count: 0 }"
+     class="pb-10 px-10">
+    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold
+        py-2 px-4 rounded w-fit"
+            x-on:click="count++">Increment
+    </button>
+
+    <span x-text="count"></span>
+</div>
+<hr>
+<h1 class="text-3xl font-bold pt-10 px-10">Simple HTMX</h1>
+<div class="flex flex-row">
+    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold
+        py-2 px-4 mb-10 mx-10 rounded w-fit"
+            hx-get="{% url 'base:htmx' %}"
+            hx-trigger="click"
+            hx-target="#click-test"
+            hx-swap="outerHTML"
+    >
+        Click Me!
+    </button>
+    <span id="click-test"></span>
+</div>
+</body>
+</html>
