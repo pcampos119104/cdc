@@ -234,5 +234,7 @@ fabric.properties
 
 # local files for each dev
 /extras/local/
+/extras/__marimo__
+/media
 /node_modules/
 staticfiles

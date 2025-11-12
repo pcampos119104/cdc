@@ -1,5 +1,5 @@
 # Pull official base image
-FROM python:3.13.5-alpine3.22 AS builder
+FROM python:3.14.0-alpine3.22 AS builder
 
 # Set working directory
 WORKDIR /app
@@ -19,7 +19,7 @@ RUN rm -rf node_modules
 
 # criar o output.css do tailwind
 
-FROM python:3.13.5-alpine3.22
+FROM python:3.14.0-alpine3.22
 WORKDIR /app
 
 COPY ./docker/prod/start.xsh /start.xsh

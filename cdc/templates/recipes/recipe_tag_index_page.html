@@ -1,0 +1,21 @@
+{% extends "home/../base/base.html" %}
+{% load wagtailcore_tags %}
+
+{% block content %}
+
+    {% if request.GET.tag %}
+        <h4>Showing pages tagged "{{ request.GET.tag }}"</h4>
+    {% endif %}
+
+    {% for recipepage in recipepages %}
+
+          <p>
+              <strong><a href="{% pageurl recipepage %}">{{ recipepage.title }}</a></strong><br />
+              <small>Revised: {{ recipepage.latest_revision_created_at }}</small><br />
+          </p>
+
+    {% empty %}
+        No pages found with that tag.
+    {% endfor %}
+
+{% endblock %}

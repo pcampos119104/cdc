@@ -1,5 +1,5 @@
 # Pull official base image
-FROM python:3.13.5-alpine3.22
+FROM python:3.14.0-alpine3.22
 # Set working directory
 WORKDIR /app
 # Don't write out pyc files - improves performance and reduces container size
