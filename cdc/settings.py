@@ -194,7 +194,7 @@ WAGTAILDOCS_EXTENSIONS = ['csv', 'docx', 'key', 'odt', 'pdf', 'pptx', 'rtf', 'tx
 # todo arrumar para deploy
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-LOG_LEVEL = 'DEBUG' if DEBUG else env.str('LOG_LEVEL', 'INFO')
+LOG_LEVEL = 'INFO' if DEBUG else env.str('LOG_LEVEL', 'INFO')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

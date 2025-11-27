@@ -9,7 +9,7 @@ from wagtail.search import index
 
 class RecipeIndexPage(Page):
     intro = RichTextField(blank=True)
-
+    subpage_types = ['recipes.RecipePage',]
     content_panels = Page.content_panels + ['intro']
 
     def get_context(self, request):
