@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
-
 from pathlib import Path
 
 import environ
@@ -194,41 +193,3 @@ WAGTAILDOCS_EXTENSIONS = ['csv', 'docx', 'key', 'odt', 'pdf', 'pptx', 'rtf', 'tx
 # todo arrumar para deploy
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-LOG_LEVEL = 'INFO' if DEBUG else env.str('LOG_LEVEL', 'INFO')
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
-        },
-    },
-    'handlers': {
-        'sentry': {
-            'level': 'ERROR',
-            'class': 'sentry_sdk.integrations.logging.SentryHandler',
-        },
-        'console': {
-            'level': 'DEBUG',  # Para desenvolvimento ou depuração
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'sentry'],
-            'level': LOG_LEVEL,
-            'propagate': True,
-        },
-        'sentry_sdk': {
-            'handlers': ['console', 'sentry'],
-            'level': LOG_LEVEL,
-            'propagate': False,
-        },
-    },
-}
