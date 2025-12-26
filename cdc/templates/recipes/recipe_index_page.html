@@ -12,12 +12,16 @@
                     {{ page.intro|richtext }}
                 </p>
             </div>
-            <div class="grid gap-8 lg:grid-cols-2">
+             <div class="grid gap-8 lg:grid-cols-2 md:grid-cols-2">
 
-                {% for post in recipepages %}
-                    <article
-                            class="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
-                        <div class="flex justify-between items-center mb-5 text-gray-500">
+                 {% for post in recipepages %}
+                     <article
+                             class="flex flex-col h-full p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+                         {# imagem da receita #}
+                         <div class="mb-4">
+                             {% image post.specific.image fill-400x300 class="w-full h-48 object-cover rounded-lg" %}
+                         </div>
+                         <div class="flex justify-between items-center mb-5 text-gray-500">
                             {% with tags=post.specific.tags.all %}
                                 {% if tags %}
                                     <div class="flex">
@@ -41,11 +45,11 @@
                                 {{ post.specific.title|title }}
                             </a>
                         </h2>
-                        {# description #}
-                        <p class="mb-5 font-light text-gray-500 dark:text-gray-400">
-                            {{ post.specific.description }}
-                        </p>
-                        <div class="flex justify-end items-center">
+                         {# description #}
+                         <p class="flex-grow mb-5 font-light text-gray-500 dark:text-gray-400 line-clamp-3">
+                             {{ post.specific.description }}
+                         </p>
+                         <div class="flex justify-between items-center mt-auto">
                             {# read more link #}
                             <a href="{% pageurl post %}"
                                class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">

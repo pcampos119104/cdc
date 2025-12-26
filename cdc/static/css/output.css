@@ -663,6 +663,9 @@
   .mt-4 {
     margin-top: calc(var(--spacing) * 4);
   }
+  .mt-auto {
+    margin-top: auto;
+  }
   .mr-2 {
     margin-right: calc(var(--spacing) * 2);
   }
@@ -686,6 +689,12 @@
   }
   .ml-2 {
     margin-left: calc(var(--spacing) * 2);
+  }
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
   }
   .\!hidden {
     display: none !important;
@@ -744,6 +753,12 @@
   }
   .h-6 {
     height: calc(var(--spacing) * 6);
+  }
+  .h-48 {
+    height: calc(var(--spacing) * 48);
+  }
+  .h-full {
+    height: 100%;
   }
   .w-1 {
     width: calc(var(--spacing) * 1);
@@ -980,6 +995,9 @@
   }
   .bg-white\/50 {
     background-color: color-mix(in oklab, var(--color-white) 50%, transparent);
+  }
+  .object-cover {
+    object-fit: cover;
   }
   .p-1 {
     padding: calc(var(--spacing) * 1);
@@ -1395,6 +1413,11 @@
     @media (width >= 40rem) {
       font-size: var(--text-xl);
       line-height: var(--tw-leading, var(--text-xl--line-height));
+    }
+  }
+  .md\:grid-cols-2 {
+    @media (width >= 48rem) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
   .md\:p-8 {
