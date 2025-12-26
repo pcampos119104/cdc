@@ -1,11 +1,10 @@
 import pytest
-from django.urls import reverse
 
 
 class TestBaseViews:
-    def test_home(self, client):
+    def test_home(self, client, db):
         """
         Test if home page works
         """
-        resp = client.get(reverse('base:home'))
+        resp = client.get('/')
         assert resp.status_code == 200
