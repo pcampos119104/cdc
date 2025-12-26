@@ -33,6 +33,8 @@ just mng collectstatic
 - Use RichTextField for HTML content
 - Use ClusterTaggableManager for tags
 - Follow Wagtail Page patterns for CMS pages
+- RecipeTagIndexPage template: 'recipes/recipe_tag_index_page.html'
+- Page hierarchy: RecipeTagIndexPage should be child of Home page (not RecipeIndexPage)
 
 ## Testing
 - Use pytest with django_db fixture for database access

@@ -13,7 +13,9 @@ from wagtail.snippets.views.snippets import SnippetViewSet
 
 class RecipeIndexPage(Page):
     intro = RichTextField(blank=True)
-    subpage_types = ['recipes.RecipePage',]
+    subpage_types = [
+        'recipes.RecipePage',
+    ]
     content_panels = Page.content_panels + ['intro']
 
     def get_context(self, request):
@@ -25,14 +27,29 @@ class RecipeIndexPage(Page):
 
 
 class RecipeTagIndexPage(Page):
-    template = 'recipe/recipe_index_page.html'
+    template = 'recipes/recipe_tag_index_page.html'
 
     def get_context(self, request):
-        tag = request.GET.get('tag')
-        recipepages = RecipePage.objects.filter(tags__name=tag)
-
-        # Update template context
         context = super().get_context(request)
+        tag_name = request.GET.get('tag')
+
+        if tag_name:
+            # Filtrar receitas por tag específica
+            recipepages = RecipePage.objects.live().filter(tags__name=tag_name)
+            context['current_tag'] = tag_name
+        else:
+            # Mostrar todas as tags disponíveis com contagem
+            from django.db.models import Count
+            from taggit.models import Tag
+
+            all_tags = (
+                Tag.objects.annotate(num_items=Count('taggit_taggeditem_items') + 1)
+                .filter(num_items__gt=0)
+                .order_by('-num_items', 'name')
+            )
+            context['all_tags'] = all_tags
+            recipepages = RecipePage.objects.none()
+
         context['recipepages'] = recipepages
         return context
 
@@ -54,7 +71,7 @@ class RecipePage(Page):
         FieldPanel('directions'),
         FieldPanel('font'),
         FieldPanel('image'),
-        InlinePanel('ingredients', label="Ingredientes"),
+        InlinePanel('ingredients', label='Ingredientes'),
     ]
 
     search_fields = Page.search_fields + [
@@ -65,11 +82,12 @@ class RecipePage(Page):
     parent_page_types = ['recipes.RecipeIndexPage']
     subpage_types = []
 
+
 class RecipeIngredient(ClusterableModel):
     page = ParentalKey('RecipePage', on_delete=models.CASCADE, related_name='ingredients')
     ingredient = models.ForeignKey('recipes.Ingredient', on_delete=models.PROTECT)
     metric = models.ForeignKey('recipes.Metric', on_delete=models.PROTECT)
-    quantity = models.DecimalField("Quantidade", max_digits=6, decimal_places=2)
+    quantity = models.DecimalField('Quantidade', max_digits=6, decimal_places=2)
 
     panels = [
         FieldPanel('ingredient'),
@@ -77,23 +95,24 @@ class RecipeIngredient(ClusterableModel):
         FieldPanel('quantity'),
         MultiFieldPanel(
             [
-                InlinePanel('ingredient_qualifiers', label="Qualificadores", min_num=0, max_num=5),
+                InlinePanel('ingredient_qualifiers', label='Qualificadores', min_num=0, max_num=5),
             ],
-            heading="Detalhes do ingrediente",
-            classname="collapsed"
+            heading='Detalhes do ingrediente',
+            classname='collapsed',
         ),
     ]
 
     def __str__(self):
-        return f"{self.quantity or '?'} {getattr(self.metric, 'abbr', '?')} de {getattr(self.ingredient, 'name', '?')}"
+        return f'{self.quantity or "?"} {getattr(self.metric, "abbr", "?")} de {getattr(self.ingredient, "name", "?")}'
 
     @property
     def qualifier_list(self):
         """Usado no template se precisar mostrar os qualifiers"""
         return [iq.qualifier.name for iq in self.detailed_qualifiers.all()]
 
+
 class Ingredient(models.Model):
-    name = models.CharField("Nome", max_length=64, unique=True)
+    name = models.CharField('Nome', max_length=64, unique=True)
 
     panels = [
         FieldPanel('name'),
@@ -107,8 +126,8 @@ class Ingredient(models.Model):
 
 
 class Metric(models.Model):
-    name = models.CharField("Nome", max_length=30)
-    abbr = models.CharField("Abreviação", max_length=10, help_text="Ex: g, ml, xíc., colher")
+    name = models.CharField('Nome', max_length=30)
+    abbr = models.CharField('Abreviação', max_length=10, help_text='Ex: g, ml, xíc., colher')
 
     panels = [
         FieldPanel('name'),
@@ -120,12 +139,12 @@ class Metric(models.Model):
 
     class Meta:
         ordering = ['name']
-        verbose_name = "Métrica"
-        verbose_name_plural = "Métricas"
+        verbose_name = 'Métrica'
+        verbose_name_plural = 'Métricas'
 
 
 class Qualifier(models.Model):
-    name = models.CharField("Nome", max_length=64, help_text="Ex: picado, ralado, em cubos, opcional")
+    name = models.CharField('Nome', max_length=64, help_text='Ex: picado, ralado, em cubos, opcional')
 
     panels = [FieldPanel('name')]
 
@@ -134,6 +153,7 @@ class Qualifier(models.Model):
 
     class Meta:
         ordering = ['name']
+
 
 class RecipeIngredientQualifier(ClusterableModel):
     ingredient = ParentalKey('RecipeIngredient', related_name='ingredient_qualifiers', on_delete=models.CASCADE)
@@ -146,23 +166,27 @@ class RecipeIngredientQualifier(ClusterableModel):
     def __str__(self):
         return str(self.qualifier)
 
+
 class IngredientViewSet(SnippetViewSet):
     model = Ingredient
-    icon = "snippet"
+    icon = 'snippet'
     list_display = ['name']
     search_fields = ['name']
+
 
 class MetricViewSet(SnippetViewSet):
     model = Metric
-    icon = "snippet"
+    icon = 'snippet'
     list_display = ['abbr', 'name']
     search_fields = ['name', 'abbr']
 
+
 class QualifierViewSet(SnippetViewSet):
     model = Qualifier
-    icon = "snippet"
+    icon = 'snippet'
     list_display = ['name']
     search_fields = ['name']
+
 
 # Registre assim:
 register_snippet(Ingredient, viewset=IngredientViewSet)

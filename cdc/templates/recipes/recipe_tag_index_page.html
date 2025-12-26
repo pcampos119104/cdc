@@ -1,21 +1,117 @@
-{% extends "home/../base/base.html" %}
-{% load wagtailcore_tags %}
+{% extends "base/base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
 
 {% block content %}
+<section class="bg-white dark:bg-gray-900">
+    <div class="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
+        <div class="mx-auto max-w-screen-sm text-center lg:mb-16 mb-8">
+            <h2 class="mb-4 text-3xl lg:text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
+                {% if current_tag %}
+                    Receitas com tag "{{ current_tag }}"
+                {% else %}
+                    Todas as Tags Disponíveis
+                {% endif %}
+            </h2>
+            {% if not current_tag %}
+                <p class="font-light text-gray-500 sm:text-xl dark:text-gray-400">
+                    Clique em uma tag para ver as receitas relacionadas.
+                </p>
+            {% endif %}
+        </div>
 
-    {% if request.GET.tag %}
-        <h4>Showing pages tagged "{{ request.GET.tag }}"</h4>
-    {% endif %}
+        {% if current_tag %}
+            <div class="grid gap-8 lg:grid-cols-2 md:grid-cols-2">
+                {% for recipepage in recipepages %}
+                    <article class="flex flex-col h-full p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700">
+                        {# imagem da receita #}
+                        <div class="mb-4">
+                            {% image recipepage.specific.image fill-400x300 class="w-full h-48 object-cover rounded-lg" %}
+                        </div>
+                        <div class="flex justify-between items-center mb-5 text-gray-500">
+                            {% with tags=recipepage.specific.tags.all %}
+                                {% if tags %}
+                                    <div class="flex">
+                                        {% for tag in tags %}
+                                            <a href="{% slugurl 'tags' %}?tag={{ tag }}">
+                                            <span class="bg-purple-100 text-purple-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-purple-900 dark:text-purple-300">
+                                                {{ tag }}
+                                            </span>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
 
-    {% for recipepage in recipepages %}
-
-          <p>
-              <strong><a href="{% pageurl recipepage %}">{{ recipepage.title }}</a></strong><br />
-              <small>Revised: {{ recipepage.latest_revision_created_at }}</small><br />
-          </p>
-
-    {% empty %}
-        No pages found with that tag.
-    {% endfor %}
-
+                            {# data #}
+                            <span class="text-sm">date</span>
+                        </div>
+                        {# titulo #}
+                        <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                            <a href="{% pageurl recipepage %}">
+                                {{ recipepage.specific.title|title }}
+                            </a>
+                        </h2>
+                        {# description #}
+                        <p class="flex-grow mb-5 font-light text-gray-500 dark:text-gray-400 line-clamp-3">
+                            {{ recipepage.specific.description }}
+                        </p>
+                        <div class="flex justify-between items-center mt-auto">
+                            {# read more link #}
+                            <a href="{% pageurl recipepage %}"
+                               class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">
+                                Ver receita
+                                <svg class="ml-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
+                                     xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd"
+                                          d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                                          clip-rule="evenodd"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    </article>
+                {% empty %}
+                    <div class="col-span-full text-center py-12">
+                        <p class="text-gray-500 dark:text-gray-400 text-lg">
+                            Nenhuma receita encontrada com a tag "{{ current_tag }}".
+                        </p>
+                        <div class="flex justify-center gap-4 mt-6">
+                            <a href="{% pageurl page %}" class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">
+                                ← Ver todas as tags
+                            </a>
+                            <a href="/" class="inline-flex items-center font-medium text-primary-600 dark:text-primary-500 hover:underline">
+                                Ir para página inicial
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Lista de todas as tags disponíveis -->
+            <div class="max-w-4xl mx-auto">
+                {% if all_tags %}
+                    <div class="flex flex-wrap justify-center gap-3">
+                        {% for tag in all_tags %}
+                            <a href="?tag={{ tag.name }}"
+                               class="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 bg-blue-100 rounded-full hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800 transition-colors">
+                                {{ tag.name }}
+                                <span class="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-blue-800 bg-blue-200 rounded-full dark:bg-blue-700 dark:text-blue-300">
+                                    {{ tag.num_items }}
+                                </span>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-12">
+                        <p class="text-gray-500 dark:text-gray-400 text-lg">
+                            Nenhuma tag encontrada no momento.
+                        </p>
+                        <a href="{% pageurl page.get_parent %}" class="inline-flex items-center mt-4 font-medium text-primary-600 dark:text-primary-500 hover:underline">
+                            ← Voltar para a página inicial
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</section>
 {% endblock %}
