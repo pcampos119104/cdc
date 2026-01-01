@@ -39,3 +39,5 @@ just mng collectstatic
 ## Testing
 - Use pytest with django_db fixture for database access
 - Wagtail pages are tested via URL paths, not named URLs
+- Comprehensive test coverage for all models and views
+- Tests organized by functionality: test_models.py, test_views.py, test_snippets.py

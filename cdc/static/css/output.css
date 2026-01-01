@@ -784,9 +784,6 @@
   .w-6 {
     width: calc(var(--spacing) * 6);
   }
-  .w-48 {
-    width: calc(var(--spacing) * 48);
-  }
   .w-64 {
     width: calc(var(--spacing) * 64);
   }
@@ -807,9 +804,6 @@
   }
   .flex-1 {
     flex: 1;
-  }
-  .flex-shrink {
-    flex-shrink: 1;
   }
   .shrink {
     flex-shrink: 1;
@@ -943,10 +937,6 @@
     border-top-left-radius: var(--radius-lg);
     border-bottom-left-radius: var(--radius-lg);
   }
-  .rounded-t-lg {
-    border-top-left-radius: var(--radius-lg);
-    border-top-right-radius: var(--radius-lg);
-  }
   .rounded-r-lg {
     border-top-right-radius: var(--radius-lg);
     border-bottom-right-radius: var(--radius-lg);
@@ -1076,9 +1066,6 @@
   }
   .py-12 {
     padding-block: calc(var(--spacing) * 12);
-  }
-  .ps-3 {
-    padding-inline-start: calc(var(--spacing) * 3);
   }
   .pt-2 {
     padding-top: calc(var(--spacing) * 2);

@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('recipes', '0002_ingredient_metric_qualifier_recipeingredient'),
         ('wagtailimages', '0027_image_description'),
@@ -15,6 +14,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='recipepage',
             name='image',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='+', to='wagtailimages.image'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.PROTECT, related_name='+', to='wagtailimages.image'
+            ),
         ),
     ]

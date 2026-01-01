@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+
 import os
 from pathlib import Path
 
@@ -192,4 +193,3 @@ WAGTAILADMIN_BASE_URL = 'https://www.cozinhadecampos.com.br'
 WAGTAILDOCS_EXTENSIONS = ['csv', 'docx', 'key', 'odt', 'pdf', 'pptx', 'rtf', 'txt', 'xlsx', 'zip']
 # todo arrumar para deploy
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-

@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('recipes', '0003_alter_recipepage_image'),
     ]
@@ -20,7 +19,14 @@ class Migration(migrations.Migration):
             name='RecipeIngredientQualifier',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ingredient', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='ingredient_qualifiers', to='recipes.recipeingredient')),
+                (
+                    'ingredient',
+                    modelcluster.fields.ParentalKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='ingredient_qualifiers',
+                        to='recipes.recipeingredient',
+                    ),
+                ),
                 ('qualifier', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='recipes.qualifier')),
             ],
             options={

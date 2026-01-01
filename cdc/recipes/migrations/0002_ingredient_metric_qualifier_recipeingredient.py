@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('recipes', '0001_initial'),
     ]
@@ -27,7 +26,10 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=30, verbose_name='Nome')),
-                ('abbr', models.CharField(help_text='Ex: g, ml, xíc., colher', max_length=10, verbose_name='Abreviação')),
+                (
+                    'abbr',
+                    models.CharField(help_text='Ex: g, ml, xíc., colher', max_length=10, verbose_name='Abreviação'),
+                ),
             ],
             options={
                 'verbose_name': 'Métrica',
@@ -39,7 +41,12 @@ class Migration(migrations.Migration):
             name='Qualifier',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(help_text='Ex: picado, ralado, em cubos, opcional', max_length=64, verbose_name='Nome')),
+                (
+                    'name',
+                    models.CharField(
+                        help_text='Ex: picado, ralado, em cubos, opcional', max_length=64, verbose_name='Nome'
+                    ),
+                ),
             ],
             options={
                 'ordering': ['name'],
@@ -52,7 +59,12 @@ class Migration(migrations.Migration):
                 ('quantity', models.DecimalField(decimal_places=2, max_digits=6, verbose_name='Quantidade')),
                 ('ingredient', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='recipes.ingredient')),
                 ('metric', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='recipes.metric')),
-                ('page', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='ingredients', to='recipes.recipepage')),
+                (
+                    'page',
+                    modelcluster.fields.ParentalKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='ingredients', to='recipes.recipepage'
+                    ),
+                ),
                 ('qualifiers', models.ManyToManyField(blank=True, to='recipes.qualifier')),
             ],
             options={

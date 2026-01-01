@@ -8,7 +8,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -21,7 +20,17 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='RecipeIndexPage',
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
+                (
+                    'page_ptr',
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to='wagtailcore.page',
+                    ),
+                ),
                 ('intro', wagtail.fields.RichTextField(blank=True)),
             ],
             options={
@@ -32,7 +41,17 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='RecipeTagIndexPage',
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
+                (
+                    'page_ptr',
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to='wagtailcore.page',
+                    ),
+                ),
             ],
             options={
                 'abstract': False,
@@ -42,11 +61,36 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='RecipePage',
             fields=[
-                ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
+                (
+                    'page_ptr',
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to='wagtailcore.page',
+                    ),
+                ),
                 ('description', models.TextField(help_text='Breve descrição da receita.', verbose_name='descrição')),
-                ('directions', wagtail.fields.RichTextField(blank=True, help_text='Passos para o preparo.', verbose_name='preparo')),
-                ('font', models.CharField(help_text='Livro de receita, link do youtube e etc.', max_length=200, verbose_name='fonte')),
-                ('image', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='+', to='wagtailimages.image')),
+                (
+                    'directions',
+                    wagtail.fields.RichTextField(
+                        blank=True, help_text='Passos para o preparo.', verbose_name='preparo'
+                    ),
+                ),
+                (
+                    'font',
+                    models.CharField(
+                        help_text='Livro de receita, link do youtube e etc.', max_length=200, verbose_name='fonte'
+                    ),
+                ),
+                (
+                    'image',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='+', to='wagtailimages.image'
+                    ),
+                ),
             ],
             options={
                 'abstract': False,
@@ -57,8 +101,22 @@ class Migration(migrations.Migration):
             name='RecipePageTag',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('content_object', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='tagged_items', to='recipes.recipepage')),
-                ('tag', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='%(app_label)s_%(class)s_items', to='taggit.tag')),
+                (
+                    'content_object',
+                    modelcluster.fields.ParentalKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='tagged_items',
+                        to='recipes.recipepage',
+                    ),
+                ),
+                (
+                    'tag',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='%(app_label)s_%(class)s_items',
+                        to='taggit.tag',
+                    ),
+                ),
             ],
             options={
                 'abstract': False,
@@ -67,6 +125,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='recipepage',
             name='tags',
-            field=modelcluster.contrib.taggit.ClusterTaggableManager(blank=True, help_text='A comma-separated list of tags.', through='recipes.RecipePageTag', to='taggit.Tag', verbose_name='Tags'),
+            field=modelcluster.contrib.taggit.ClusterTaggableManager(
+                blank=True,
+                help_text='A comma-separated list of tags.',
+                through='recipes.RecipePageTag',
+                to='taggit.Tag',
+                verbose_name='Tags',
+            ),
         ),
     ]
