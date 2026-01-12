@@ -61,3 +61,5 @@ add to the .env:
 
 ALLOWED_HOSTS=www.cozinhadecampos.com.br
 CSRF_TRUSTED_ORIGINS=https://www.cozinhadecampos.com.br
+
+Create a 'Home page'
