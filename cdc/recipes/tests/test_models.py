@@ -5,11 +5,7 @@ from wagtail.models import Page
 from wagtail.test.utils import WagtailPageTestCase
 
 from cdc.recipes.models import (
-    Ingredient,
-    Metric,
-    Qualifier,
     RecipeIndexPage,
-    RecipeIngredient,
     RecipePage,
     RecipeTagIndexPage,
 )
@@ -120,97 +116,4 @@ class TestRecipePage(WagtailPageTestCase):
         # Check for InlinePanel
         inline_panels = [panel for panel in panels if isinstance(panel, InlinePanel)]
         inline_names = [panel.relation_name for panel in inline_panels]
-        self.assertIn('ingredients', inline_names)
-
-
-class TestIngredient(TestCase):
-    def test_ingredient_creation(self):
-        """Test Ingredient model"""
-        ingredient = Ingredient.objects.create(name='Farinha')
-        self.assertEqual(str(ingredient), 'Farinha')
-        self.assertEqual(ingredient.name, 'Farinha')
-
-    def test_ingredient_unique_name(self):
-        """Test name uniqueness"""
-        Ingredient.objects.create(name='Farinha')
-        with self.assertRaises(Exception):
-            Ingredient.objects.create(name='Farinha')
-
-    def test_ingredient_ordering(self):
-        """Test ordering by name"""
-        Ingredient.objects.create(name='Zebra')
-        Ingredient.objects.create(name='Abacaxi')
-        ingredients = list(Ingredient.objects.all())
-        self.assertEqual(ingredients[0].name, 'Abacaxi')
-        self.assertEqual(ingredients[1].name, 'Zebra')
-
-
-class TestMetric(TestCase):
-    def test_metric_creation(self):
-        """Test Metric model"""
-        metric = Metric.objects.create(name='Gramas', abbr='g')
-        self.assertEqual(str(metric), 'g')
-        self.assertEqual(metric.name, 'Gramas')
-        self.assertEqual(metric.abbr, 'g')
-
-    def test_metric_str_fallback(self):
-        """Test __str__ fallback to name when abbr is empty"""
-        metric = Metric.objects.create(name='Unidade', abbr='')
-        self.assertEqual(str(metric), 'Unidade')
-
-    def test_metric_ordering(self):
-        """Test ordering by name"""
-        Metric.objects.create(name='Zilo', abbr='zl')
-        Metric.objects.create(name='Abacaxi', abbr='ab')
-        metrics = list(Metric.objects.all())
-        self.assertEqual(metrics[0].name, 'Abacaxi')
-        self.assertEqual(metrics[1].name, 'Zilo')
-
-
-class TestQualifier(TestCase):
-    def test_qualifier_creation(self):
-        """Test Qualifier model"""
-        qualifier = Qualifier.objects.create(name='Picado')
-        self.assertEqual(str(qualifier), 'Picado')
-        self.assertEqual(qualifier.name, 'Picado')
-
-    def test_qualifier_ordering(self):
-        """Test ordering by name"""
-        Qualifier.objects.create(name='Zebra')
-        Qualifier.objects.create(name='Abacaxi')
-        qualifiers = list(Qualifier.objects.all())
-        self.assertEqual(qualifiers[0].name, 'Abacaxi')
-        self.assertEqual(qualifiers[1].name, 'Zebra')
-
-
-class TestRecipeIngredient(TestCase):
-    def setUp(self):
-        # Create related objects for testing
-        self.ingredient = Ingredient.objects.create(name='Farinha')
-        self.metric = Metric.objects.create(name='Gramas', abbr='g')
-
-    def test_recipe_ingredient_str_method(self):
-        """Test RecipeIngredient string representation method logic"""
-        # Create instance without saving to test the __str__ method logic
-        recipe_ingredient = RecipeIngredient(ingredient=self.ingredient, metric=self.metric, quantity=200)
-        expected = '200 g de Farinha'
-        # Test the logic without database constraints
-        quantity_str = str(recipe_ingredient.quantity or '?')
-        metric_str = getattr(recipe_ingredient.metric, 'abbr', '?')
-        ingredient_str = getattr(recipe_ingredient.ingredient, 'name', '?')
-        result = f'{quantity_str} {metric_str} de {ingredient_str}'
-        self.assertEqual(result, expected)
-
-    def test_recipe_ingredient_str_with_none_quantity(self):
-        """Test RecipeIngredient string with None quantity"""
-        recipe_ingredient = RecipeIngredient(ingredient=self.ingredient, metric=self.metric, quantity=None)
-        # Should handle None quantity gracefully
-        quantity_str = str(recipe_ingredient.quantity or '?')
-        self.assertEqual(quantity_str, '?')
-
-    def test_recipe_ingredient_panels(self):
-        """Test RecipeIngredient has correct panels"""
-        panels = RecipeIngredient.panels
-        # Should have panels defined
-        self.assertIsInstance(panels, list)
-        self.assertGreater(len(panels), 0)
+        # No inline panels expected after removal

@@ -1,0 +1,18 @@
+### Test GET pending recipes
+GET http://localhost:8000/recipes/api/pending
+X-API-Key: eporihbkla_djfn_a_lksjdnoenb
+
+###
+
+### Test POST update recipe with tags
+POST http://localhost:8000/api/pending-recipes
+Content-Type: application/json
+X-API-Key: eporihbkla_djfn_a_lksjdnoenb
+
+{
+  "id": 1,
+  "processed_description": "Updated description",
+  "tags": "tag1,tag2,tag3"
+}
+
+###
