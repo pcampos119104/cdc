@@ -11,7 +11,7 @@ ENV UV_COMPILE_BYTECODE=0
 # update the alpine linux package index
 RUN apk update
 # for psutil, a dependencie of marimo. Npm for tailwind. uv for manage system.
-RUN apk add --no-cache uv gcc python3-dev musl-dev linux-headers npm
+RUN apk add --no-cache uv gcc g++ python3-dev musl-dev linux-headers npm
 # install xonsh shell - a Python-powered shell language
 COPY uv.lock pyproject.toml package.json package-lock.json ./
 RUN uv sync --frozen

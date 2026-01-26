@@ -4,7 +4,7 @@ FROM python:3.14.0-alpine3.22 AS builder
 # Set working directory
 WORKDIR /app
 RUN apk update
-RUN apk add --no-cache gcc python3-dev musl-dev linux-headers curl uv npm
+RUN apk add --no-cache uv gcc g++ python3-dev musl-dev linux-headers npm
 
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy

@@ -10,6 +10,7 @@ from cdc import recipes
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('base/', include('cdc.base.urls')),
     path('recipes/', include('cdc.recipes.urls')),
     path('accounts/', include('allauth.urls')),
     path('__reload__/', include('django_browser_reload.urls')),

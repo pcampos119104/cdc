@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from crewai.flow import Flow, listen, start
 
-from pdrf.crews.pdr.crew import PdrCrew
+from crews.pdr.crew import PdrCrew
 
 
 class RecipeState(BaseModel):
@@ -13,10 +13,6 @@ class RecipeState(BaseModel):
 
 
 class PdrFlow(Flow[RecipeState]):
-
-    @router()
-    def analyze_request(self, req: str = None):
-        pass
 
     @start()
     def process_unstructured_recipe(self, recipe: str = None):
