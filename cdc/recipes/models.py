@@ -64,22 +64,20 @@ class RecipePage(Page):
     processed_description = RichTextField(  # Versão formatada pela IA
         verbose_name='Descrição processada', blank=True, help_text='Versão final após IA.'
     )
-     
+
     status = models.CharField(
         max_length=20,
-        choices=[('draft', 'Rascunho'),
-                 ('pending_review', 'Enviar para IA processar'),
-                 ('final_review', 'Revisar final'),
-                 ('published', 'Publicar')
-                 ],
+        choices=[('draft', 'Draft'),
+                 ('pending_review', 'Pending IA'),
+                 ('in_review', 'In Review'),
+                 ('published', 'Published')],
         default='draft',
-        help_text='Envie para "Enviar para IA processar" para formatação automática. Só "Publicar" torna visível no site.'
+        editable=False
     )
     tags = ClusterTaggableManager(through=RecipePageTag, blank=True)
     image = models.ForeignKey('wagtailimages.Image', on_delete=models.PROTECT, related_name='+')
 
     content_panels = Page.content_panels + [
-        FieldPanel('status'),
         FieldPanel('tags'),
         FieldPanel('input_description'),
         FieldPanel('processed_description'),
@@ -97,8 +95,7 @@ class RecipePage(Page):
     def save(self, *args, **kwargs):
         if self.status != 'published':
             self.live = False
-            self.has_unpublished_changes = True
         else:
             self.live = True
-            self.has_unpublished_changes = False
         super().save(*args, **kwargs)
+

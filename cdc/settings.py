@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
     'wagtail.contrib.settings',
+    'wagtail.workflows',
     'wagtail.embeds',
     'wagtail.sites',
     'wagtail.users',
@@ -207,7 +208,6 @@ else:
     }
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10_000
 
