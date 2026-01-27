@@ -14,8 +14,6 @@ import os
 from pathlib import Path
 
 import environ
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,13 +29,6 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
 RECIPE_API_KEY = env('RECIPE_API_KEY')
 
-sentry_sdk.init(
-    dsn=env.str('SENTRY_DSN', ''),
-    integrations=[DjangoIntegration()],
-    # Add data like request headers and IP for users,
-    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
-    send_default_pii=True,
-)
 
 # Application definition
 INSTALLED_APPS = [
