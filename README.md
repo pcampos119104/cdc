@@ -1,6 +1,6 @@
 #    Cozinha de Campos project
 
-Project crated using Copier tool.
+Project created using Copier tool.
 
 ## Tools, libs, etc. Some time related files.
 Versions on pyproject.lock.
