@@ -5,28 +5,49 @@ from wagtail import hooks
 from wagtail.admin.action_menu import ActionMenuItem
 
 
+class DraftActionMenuItem(ActionMenuItem):
+    name = "action-draft"
+    label = "Draft"
+    icon_name = "doc-empty"
+    order = 1
+
+    def get_url(self, parent_context):
+        request = parent_context["request"]
+        return request.path + '?action=draft'
+
+
+class AIActionMenuItem(ActionMenuItem):
+    name = 'action-submit-to-ai'
+    label = 'Submeter para IA'
+    icon_name = "cogs"
+    order = 2
+
+    def get_url(self, parent_context):
+        request = parent_context["request"]
+        return request.path + '?action=submit_to_ai'
+
+
+class PublishActionMenuItem(ActionMenuItem):
+    name = "action-publish-direct"
+    label = "Publish"
+    icon_name = "success"
+    order = 3
+
+    def get_url(self, parent_context):
+        request = parent_context["request"]
+        return request.path + '?action=publish_direct'
+
+
 @hooks.register('construct_page_action_menu')
 def custom_action_menu(menu_items, request, context):
     # Remove botões padrão em TODOS os casos (add e edit)
-    # menu_items[:] = [item for item in menu_items if item.name not in ['action-publish', 'action-submit', 'action-save-draft']]
+    menu_items[:] = [item for item in menu_items if
+                     item.name not in ['action-publish', 'action-submit', 'action-save-draft']]
 
-    # Botões para criação (add) — não dependem de page.id
-    menu_items.append(
-        ActionMenuItem(
-            'Draft',
-            url=request.path + '?action=draft',  # Usa a URL atual (add) com param
-            icon_name='doc-empty',
-            priority=1,
-        )
-    )
-
-    menu_items.append(
-        ActionMenuItem('Submeter para IA', url=request.path + '?action=submit_to_ai', icon_name='cogs', priority=2)
-    )
-
-    menu_items.append(
-        ActionMenuItem('Publish', url=request.path + '?action=publish_direct', icon_name='success', priority=3)
-    )
+    # Botões custom para criação e edição
+    menu_items.append(DraftActionMenuItem())
+    menu_items.append(PublishActionMenuItem())
+    menu_items.append(AIActionMenuItem())
 
 
 @hooks.register('before_create_page')

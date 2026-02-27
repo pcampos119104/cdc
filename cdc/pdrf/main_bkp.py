@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 from random import randint
 
-from pydantic import BaseModel
-
 from crewai.flow import Flow, listen, start
-
 from pdrf.crews.poem_crew.poem_crew import PoemCrew
+from pydantic import BaseModel
 
 
 class PoemState(BaseModel):

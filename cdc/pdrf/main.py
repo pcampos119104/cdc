@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 from random import randint
 
-from pydantic import BaseModel
-
 from crewai.flow import Flow, listen, start
-
 from crews.pdr.crew import PdrCrew
+from pydantic import BaseModel
 
 
 class RecipeState(BaseModel):

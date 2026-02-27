@@ -19,7 +19,7 @@ class RecipeIndexPage(Page):
     def get_context(self, request):
         # Update context to include only published posts, ordered by reverse-chron
         context = super().get_context(request)
-        recipepages = self.get_children().live().filter(status='published').order_by('-first_published_at')
+        recipepages = self.get_children().live().order_by('-first_published_at')
         context['recipepages'] = recipepages
         return context
 
