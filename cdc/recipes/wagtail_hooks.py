@@ -4,23 +4,26 @@ from django.urls import reverse
 from wagtail import hooks
 from wagtail.admin.action_menu import ActionMenuItem, SubmitForModerationMenuItem
 
+from .models import RecipePage, RecipeIndexPage
+
 
 class AIActionMenuItem(ActionMenuItem):
     name = 'action-submit-to-ai'
     label = 'Submeter para IA'
-    icon_name = "cogs"
+    icon_name = 'cogs'
     order = 1
 
     def get_url(self, parent_context):
-        request = parent_context["request"]
+        request = parent_context['request']
         return request.path + '?action=submit_to_ai'
 
 
 @hooks.register('construct_page_action_menu')
 def custom_action_menu(menu_items, request, context):
-    menu_items[:] = [item for item in menu_items
-                     if not isinstance(item, SubmitForModerationMenuItem)]
-
+    if not isinstance(context.get('parent_page'), RecipeIndexPage)\
+            and not isinstance(context.get('page'), RecipePage):
+        return
+    menu_items[:] = [item for item in menu_items if not isinstance(item, SubmitForModerationMenuItem)]
     menu_items.append(AIActionMenuItem())
 
 
