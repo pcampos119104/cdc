@@ -2,51 +2,25 @@
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from wagtail import hooks
-from wagtail.admin.action_menu import ActionMenuItem
-
-
-class DraftActionMenuItem(ActionMenuItem):
-    name = "action-draft"
-    label = "Draft"
-    icon_name = "doc-empty"
-    order = 1
-
-    def get_url(self, parent_context):
-        request = parent_context["request"]
-        return request.path + '?action=draft'
+from wagtail.admin.action_menu import ActionMenuItem, SubmitForModerationMenuItem
 
 
 class AIActionMenuItem(ActionMenuItem):
     name = 'action-submit-to-ai'
     label = 'Submeter para IA'
     icon_name = "cogs"
-    order = 2
+    order = 1
 
     def get_url(self, parent_context):
         request = parent_context["request"]
         return request.path + '?action=submit_to_ai'
 
 
-class PublishActionMenuItem(ActionMenuItem):
-    name = "action-publish-direct"
-    label = "Publish"
-    icon_name = "success"
-    order = 3
-
-    def get_url(self, parent_context):
-        request = parent_context["request"]
-        return request.path + '?action=publish_direct'
-
-
 @hooks.register('construct_page_action_menu')
 def custom_action_menu(menu_items, request, context):
-    # Remove botões padrão em TODOS os casos (add e edit)
-    menu_items[:] = [item for item in menu_items if
-                     item.name not in ['action-publish', 'action-submit', 'action-save-draft']]
+    menu_items[:] = [item for item in menu_items
+                     if not isinstance(item, SubmitForModerationMenuItem)]
 
-    # Botões custom para criação e edição
-    menu_items.append(DraftActionMenuItem())
-    menu_items.append(PublishActionMenuItem())
     menu_items.append(AIActionMenuItem())
 
 
@@ -64,25 +38,17 @@ def handle_custom_actions_create(request, parent_page, page_class):
 @hooks.register('after_create_page')
 def apply_action_after_create(request, page):
     action = request.session.pop('submit_action', None)
-    if action == 'draft':
-        page.status = 'draft'
-        page.live = False
-        page.save_revision()
 
     if action == 'submit_to_ai':
         page.status = 'pending_review'
         page.live = False
         page.save_revision()
 
-    if action == 'publish_direct':
-        page.status = 'published'
-        page.live = True
-        page.save_revision()
-
     if action:
         return HttpResponseRedirect(reverse('wagtailadmin_explore', args=[page.get_parent().id]))
 
 
+# todo como atualizar o page.status na hora de salvar
 @hooks.register('before_edit_page')
 def handle_custom_actions_edit(request, page):
     action = request.GET.get('action')
