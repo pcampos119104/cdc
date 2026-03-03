@@ -22,10 +22,10 @@ RUN rm -rf node_modules
 FROM python:3.12-slim
 WORKDIR /app
 
-COPY ./docker/prod/start.xsh /start.xsh
-RUN sed -i 's/\r$//g' /start.xsh
-RUN chmod +x /start.xsh
+COPY ./docker/prod/start.sh /start.sh
+RUN sed -i 's/\r$//g' /start.sh
+RUN chmod +x /start.sh
 COPY --from=builder /app /app
 ENV PATH="/app/.venv/bin:$PATH"
 
-ENTRYPOINT ["/start.xsh"]
+ENTRYPOINT ["/start.sh"]

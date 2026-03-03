@@ -34,10 +34,10 @@ RUN uv sync --frozen
 ENV PATH="/app/.venv/bin:$PATH"
 ENV VIRTUAL_ENV="/app/.venv"
 # Copy start bash script with the instruction on how to start Django.
-COPY ./docker/dev/start.xsh /start.xsh
+COPY ./docker/dev/start.sh /start.sh
 # Convert Windows line endings (CRLF) to Unix (LF) if present and make the script executable
-RUN sed -i 's/\r$//g' /start.xsh && chmod +x /start.xsh
+RUN sed -i 's/\r$//g' /start.sh && chmod +x /start.sh
 
 # Default command - not used when running through docker compose
-# as compose.yaml overrides this with the start.xsh script
-CMD ["xonsh", "/start.xsh"]
+# as compose.yaml overrides this with the start.sh script
+CMD ["bash", "/start.sh"]

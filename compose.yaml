@@ -25,7 +25,7 @@ services:
     depends_on:
       - postgres
     # The bash file to execute, the one created above and added to Dockerfile
-    command: xonsh /start.xsh
+    command: bash /start.sh
 
   postgres:
     # The postgres image from docker hub
