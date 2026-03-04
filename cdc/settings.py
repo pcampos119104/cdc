@@ -29,7 +29,6 @@ ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
 RECIPE_API_KEY = env('RECIPE_API_KEY')
 
-
 # Application definition
 INSTALLED_APPS = [
     'wagtail.contrib.forms',
@@ -54,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'django_browser_reload',
+    "steady_queue",
     'modelcluster',
     'taggit',
     'allauth',
@@ -164,6 +164,13 @@ STATICFILES_DIRS = [BASE_DIR / 'cdc/static']
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+TASKS = {
+    "default": {
+        "BACKEND": "steady_queue.backend.SteadyQueueBackend",
+        "QUEUES": ["default"],
+        "OPTIONS": {},
+    }
+}
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

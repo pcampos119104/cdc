@@ -17,6 +17,7 @@ dependencies = [
     "gunicorn>=25.1.0",
     "wagtail>=7.3",
     "django-storages[s3]>=1.14.6",
+    "steady-queue>=0.1.7",
 ]
 
 [dependency-groups]
