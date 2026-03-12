@@ -15,9 +15,9 @@ dependencies = [
     "psycopg[binary]>=3.2.6",
     "whitenoise>=6.11.0",
     "gunicorn>=25.1.0",
-    "wagtail>=7.3",
+    "wagtail>=7.3.1",
     "django-storages[s3]>=1.14.6",
-    "steady-queue>=0.1.7",
+    "django-tasks>=0.11.0",
 ]
 
 [dependency-groups]
@@ -42,7 +42,7 @@ DJANGO_SETTINGS_MODULE = "cdc.settings"
 python_files = ["test_*.py", "*_test.py", "testing/python/*.py"]
 
 [tool.ruff]
-# 80 it's the default but nowadays the common sense it's 120.
+# 80 it's the default but nowadays, the common sense it's 120.
 line-length = 120
 # Show an enumeration of all fixed lint violations
 show-fixes = true

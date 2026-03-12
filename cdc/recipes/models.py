@@ -7,6 +7,8 @@ from wagtail.admin.panels import FieldPanel
 from wagtail.fields import RichTextField
 from wagtail.models import Orderable, Page
 from wagtail.search import index
+from wagtail.models import Task
+from cdc.recipes.tasks import process_recipe_with_ai
 
 
 class RecipeIndexPage(Page):
@@ -99,3 +101,23 @@ class RecipePage(Page):
             self.live = True
         super().save(*args, **kwargs)
 
+
+
+class AIProcessingTask(Task):
+    label = "AI processing task"
+
+    class Meta:
+        verbose_name = "AI Processing Task"
+        verbose_name_plural = "AI Processing Tasks"
+
+    def start(self, workflow_state, user=None):
+        task_state = super().start(workflow_state, user=user)
+
+        # dispara processamento async
+        process_recipe_with_ai.enqueue(task_state.id)
+
+        return task_state
+
+    def on_action(self, task_state, user, action_name, **kwargs):
+        # Não queremos ação manual aqui
+        pass

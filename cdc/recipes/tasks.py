@@ -1,19 +1,15 @@
 from django.tasks import task
-
-from cdc.recipes.models import RecipePage
+from wagtail.models import TaskState
 
 
 @task
-def process_recipe_description(page: RecipePage):
+def process_recipe_with_ai(task_state_id):
     print('>>>>> process_recipe_description')
-    # pegar a revisao
-    latest_revision = page.get_latest_revision()
-    current_draft_page = latest_revision.as_page_object()  # retorna uma instância "falsa" com campos da revisão
-    current_draft_page.description = (
-            current_draft_page.description + " [Processado pela IA: texto otimizado, adicionadas tags automáticas]"
-    )
+    task_state = TaskState.objects.get(id=task_state_id)
+    page = task_state.workflow_state.content_object.specific
+    print(">>>>> Processing page", page.id)
+    page.processed_description = page.input_description + " [Processado pela IA: texto otimizado, adicionadas tags automáticas]"
+    page.save_revision()
 
-    # Avança o workflow automaticamente
-    task = IATask.objects.get(id=task_id)
-    task_state = TaskState.objects.get(task=task, workflow_state__page=page)
-    task_state.finish(user=user, action='approve')  # avança para próxima task (review humana)
+    # avança o workflow automaticamente
+    task_state.approve(user=None)

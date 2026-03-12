@@ -31,6 +31,10 @@ RECIPE_API_KEY = env('RECIPE_API_KEY')
 
 # Application definition
 INSTALLED_APPS = [
+    # Tasks framework precisa carregar primeiro
+    "django_tasks",
+    "django_tasks.backends.database",
+    # Wagtail
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
     'wagtail.contrib.settings',
@@ -44,6 +48,7 @@ INSTALLED_APPS = [
     'wagtail.search',
     'wagtail.admin',
     'wagtail',
+    # Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,14 +56,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.postgres',
     'django.contrib.staticfiles',
+    # libs
     'django_extensions',
     'django_browser_reload',
-    "steady_queue",
     'modelcluster',
     'taggit',
     'allauth',
     'allauth.account',
     'django_htmx',
+    # apps
     'cdc.base',
     'cdc.recipes',
 ]
@@ -166,11 +172,9 @@ MEDIA_URL = '/media/'
 
 TASKS = {
     "default": {
-        "BACKEND": "steady_queue.backend.SteadyQueueBackend",
-        "QUEUES": ["default"],
-        "OPTIONS": {},
+        "BACKEND": "django_tasks.backends.immediate.ImmediateBackend",
     }
-}
+}# "BACKEND": "steady_queue.backend.SteadyQueueBackend",
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
