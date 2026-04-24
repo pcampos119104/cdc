@@ -27,18 +27,18 @@ services:
     # The bash file to execute, the one created above and added to Dockerfile
     command: bash /start.sh
 
-# worker:
-#   image: cdc_local
-#   container_name: cdc_worker
-#   volumes:
-#     - .:/app:z
-#     - /app/.venv
-#     - /app/node_modules
-#   env_file:
-#     - .env
-#   depends_on:
-#     - postgres
-#   command: python manage.py runtasks
+  worker:
+    image: cdc_local
+    container_name: cdc_worker
+    volumes:
+      - .:/app:z
+      - /app/.venv
+      - /app/node_modules
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    command: python manage.py steady_queue
 
   postgres:
     # The postgres image from docker hub

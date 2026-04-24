@@ -31,9 +31,6 @@ RECIPE_API_KEY = env('RECIPE_API_KEY')
 
 # Application definition
 INSTALLED_APPS = [
-    # Tasks framework precisa carregar primeiro
-    "django_tasks",
-    "django_tasks.backends.database",
     # Wagtail
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
@@ -57,6 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'django.contrib.staticfiles',
     # libs
+    "steady_queue",
     'django_extensions',
     'django_browser_reload',
     'modelcluster',
@@ -170,11 +168,14 @@ STATICFILES_DIRS = [BASE_DIR / 'cdc/static']
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+# settings.py
 TASKS = {
     "default": {
-        "BACKEND": "django_tasks.backends.immediate.ImmediateBackend",
+        "BACKEND": "steady_queue.backend.SteadyQueueBackend",
+        "QUEUES": ["default"],
+        "OPTIONS": {},
     }
-}# "BACKEND": "steady_queue.backend.SteadyQueueBackend",
+}
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

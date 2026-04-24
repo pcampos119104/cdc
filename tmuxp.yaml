@@ -1,0 +1,12 @@
+session_name: cdc
+windows:
+  - window_name: editor
+    panes:
+      - shell_command:
+          - nvim
+  - window_name: opencode
+    panes:
+      - shell_command:
+          - opencode
+      - shell_command:
+          - lazygit
