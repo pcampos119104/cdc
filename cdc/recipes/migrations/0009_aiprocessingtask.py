@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('recipes', '0008_alter_recipepage_status'),
         ('wagtailcore', '0096_referenceindex_referenceindex_source_object_and_more'),
@@ -15,7 +14,17 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='AIProcessingTask',
             fields=[
-                ('task_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.task')),
+                (
+                    'task_ptr',
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to='wagtailcore.task',
+                    ),
+                ),
             ],
             options={
                 'verbose_name': 'AI Processing Task',

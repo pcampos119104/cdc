@@ -54,24 +54,6 @@ class PdrFlow(Flow[RecipeState]):
         }
         PdrCrew().crew().kickoff(inputs=inputs)
 
-    # @listen(generate_sentence_count)
-    # def generate_poem(self):
-    #     print("Generating poem")
-    #     result = (
-    #         PoemCrew()
-    #         .crew()
-    #         .kickoff(inputs={"sentence_count": self.state.sentence_count})
-    #     )
-    #
-    #     print("Poem generated", result.raw)
-    #     self.state.poem = result.raw
-    #
-    # @listen(generate_poem)
-    # def save_poem(self):
-    #     print("Saving poem")
-    #     with open("poem.txt", "w") as f:
-    #         f.write(self.state.poem)
-
 
 def kickoff():
     pdrf = PdrFlow()

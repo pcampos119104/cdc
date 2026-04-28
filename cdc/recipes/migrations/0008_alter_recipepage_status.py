@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('recipes', '0007_rename_description_recipepage_input_description'),
     ]
@@ -13,6 +12,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='recipepage',
             name='status',
-            field=models.CharField(choices=[('draft', 'Draft'), ('pending_review', 'Pending IA'), ('in_review', 'In Review'), ('published', 'Published')], default='draft', editable=False, max_length=20),
+            field=models.CharField(
+                choices=[
+                    ('draft', 'Draft'),
+                    ('pending_review', 'Pending IA'),
+                    ('in_review', 'In Review'),
+                    ('published', 'Published'),
+                ],
+                default='draft',
+                editable=False,
+                max_length=20,
+            ),
         ),
     ]
