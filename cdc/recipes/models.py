@@ -5,9 +5,9 @@ from modelcluster.models import ClusterableModel
 from taggit.models import TaggedItemBase
 from wagtail.admin.panels import FieldPanel
 from wagtail.fields import RichTextField
-from wagtail.models import Orderable, Page
+from wagtail.models import Orderable, Page, Task
 from wagtail.search import index
-from wagtail.models import Task
+
 from cdc.recipes.tasks import process_recipe_with_ai
 
 
@@ -69,12 +69,14 @@ class RecipePage(Page):
 
     status = models.CharField(
         max_length=20,
-        choices=[('draft', 'Draft'),
-                 ('pending_review', 'Pending IA'),
-                 ('in_review', 'In Review'),
-                 ('published', 'Published')],
+        choices=[
+            ('draft', 'Draft'),
+            ('pending_review', 'Pending IA'),
+            ('in_review', 'In Review'),
+            ('published', 'Published'),
+        ],
         default='draft',
-        editable=False
+        editable=False,
     )
     tags = ClusterTaggableManager(through=RecipePageTag, blank=True)
     image = models.ForeignKey('wagtailimages.Image', on_delete=models.PROTECT, related_name='+')
@@ -102,13 +104,12 @@ class RecipePage(Page):
         super().save(*args, **kwargs)
 
 
-
 class AIProcessingTask(Task):
-    label = "AI processing task"
+    label = 'AI processing task'
 
     class Meta:
-        verbose_name = "AI Processing Task"
-        verbose_name_plural = "AI Processing Tasks"
+        verbose_name = 'AI Processing Task'
+        verbose_name_plural = 'AI Processing Tasks'
 
     def start(self, workflow_state, user=None):
         task_state = super().start(workflow_state, user=user)

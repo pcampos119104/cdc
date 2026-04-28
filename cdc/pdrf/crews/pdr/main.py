@@ -8,6 +8,7 @@ from pdr.crew import PdrCrew
 # Replace with inputs you want to test with, it will automatically
 # interpolate any tasks and agents information
 
+
 def run():
     """
     Run the crew.
@@ -21,7 +22,7 @@ def run():
         'ingredientes_convertidos': 'sample_value',
         'modo_preparo': 'sample_value',
         'tags': 'sample_value',
-        'receita_texto': '''Bolo de Cenoura com Farinha de Aveia
+        'receita_texto': """Bolo de Cenoura com Farinha de Aveia
 
 15 Minutos Preparo
 
@@ -41,10 +42,11 @@ Preparação
 
     Bata no liquidificador a cenoura, o óleo e os ovos.
     Retire a mistura do liquidificador e coloque em uma vasilha.
-    Acrescente o açúcar, a farinha de aveia, o fermento e as nozes picadas. Mexa delicadamente a receita de bolo de cenoura simples.
+    Acrescente o açúcar, a farinha de aveia, o fermento e as nozes picadas.
+    Mexa delicadamente a receita de bolo de cenoura simples.
     Unte e enfarinhe uma assadeira retangular média.
     Coloque a massa do bolo de cenoura na assadeira e leve ao forno preaquecido a 200°C por 45 minutos ou até dourar.
-    Agora você já sabe como fazer bolo de cenoura simples!'''
+    Agora você já sabe como fazer bolo de cenoura simples!""",
     }
     PdrCrew().crew().kickoff(inputs=inputs)
 
@@ -62,13 +64,14 @@ def train():
         'ingredientes_convertidos': 'sample_value',
         'modo_preparo': 'sample_value',
         'tags': 'sample_value',
-        'receita_texto': 'sample_value'
+        'receita_texto': 'sample_value',
     }
     try:
         PdrCrew().crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs)
 
     except Exception as e:
-        raise Exception(f"An error occurred while training the crew: {e}")
+        raise Exception(f'An error occurred while training the crew: {e}')
+
 
 def replay():
     """
@@ -78,7 +81,8 @@ def replay():
         PdrCrew().crew().replay(task_id=sys.argv[1])
 
     except Exception as e:
-        raise Exception(f"An error occurred while replaying the crew: {e}")
+        raise Exception(f'An error occurred while replaying the crew: {e}')
+
 
 def test():
     """
@@ -93,28 +97,29 @@ def test():
         'ingredientes_convertidos': 'sample_value',
         'modo_preparo': 'sample_value',
         'tags': 'sample_value',
-        'receita_texto': 'sample_value'
+        'receita_texto': 'sample_value',
     }
     try:
         PdrCrew().crew().test(n_iterations=int(sys.argv[1]), openai_model_name=sys.argv[2], inputs=inputs)
 
     except Exception as e:
-        raise Exception(f"An error occurred while testing the crew: {e}")
+        raise Exception(f'An error occurred while testing the crew: {e}')
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Usage: main.py <command> [<args>]")
+        print('Usage: main.py <command> [<args>]')
         sys.exit(1)
 
     command = sys.argv[1]
-    if command == "run":
+    if command == 'run':
         run()
-    elif command == "train":
+    elif command == 'train':
         train()
-    elif command == "replay":
+    elif command == 'replay':
         replay()
-    elif command == "test":
+    elif command == 'test':
         test()
     else:
-        print(f"Unknown command: {command}")
+        print(f'Unknown command: {command}')
         sys.exit(1)

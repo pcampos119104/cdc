@@ -13,7 +13,7 @@ class PdrCrew:
     @agent
     def conversor_de_medidas_culinarias(self) -> Agent:
         return Agent(
-            config=self.agents_config["conversor_de_medidas_culinarias"],
+            config=self.agents_config['conversor_de_medidas_culinarias'],
             tools=[],
             reasoning=False,
             max_reasoning_attempts=None,
@@ -23,7 +23,7 @@ class PdrCrew:
             max_rpm=None,
             max_execution_time=None,
             llm=LLM(
-                model="ollama/qwen2.5:14b",
+                model='ollama/qwen2.5:14b',
                 temperature=0.7,
             ),
         )
@@ -49,7 +49,7 @@ class PdrCrew:
     @agent
     def compilador_de_receitas(self) -> Agent:
         return Agent(
-            config=self.agents_config["compilador_de_receitas"],
+            config=self.agents_config['compilador_de_receitas'],
             tools=[],
             reasoning=False,
             max_reasoning_attempts=None,
@@ -59,7 +59,7 @@ class PdrCrew:
             max_rpm=None,
             max_execution_time=None,
             llm=LLM(
-                model="ollama/qwen2.5:14b",
+                model='ollama/qwen2.5:14b',
                 temperature=0.7,
             ),
         )
@@ -67,7 +67,7 @@ class PdrCrew:
     @agent
     def extrator_de_titulo(self) -> Agent:
         return Agent(
-            config=self.agents_config["extrator_de_titulo"],
+            config=self.agents_config['extrator_de_titulo'],
             tools=[],
             reasoning=False,
             max_reasoning_attempts=None,
@@ -77,7 +77,7 @@ class PdrCrew:
             max_rpm=None,
             max_execution_time=None,
             llm=LLM(
-                model="ollama/qwen2.5:14b",
+                model='ollama/qwen2.5:14b',
                 temperature=0.7,
             ),
         )
@@ -85,7 +85,7 @@ class PdrCrew:
     @agent
     def extrator_de_descricao(self) -> Agent:
         return Agent(
-            config=self.agents_config["extrator_de_descricao"],
+            config=self.agents_config['extrator_de_descricao'],
             tools=[],
             reasoning=False,
             max_reasoning_attempts=None,
@@ -95,7 +95,7 @@ class PdrCrew:
             max_rpm=None,
             max_execution_time=None,
             llm=LLM(
-                model="ollama/qwen2.5:14b",
+                model='ollama/qwen2.5:14b',
                 temperature=0.7,
             ),
         )
@@ -103,7 +103,7 @@ class PdrCrew:
     @agent
     def extrator_de_ingredientes(self) -> Agent:
         return Agent(
-            config=self.agents_config["extrator_de_ingredientes"],
+            config=self.agents_config['extrator_de_ingredientes'],
             tools=[],
             reasoning=False,
             max_reasoning_attempts=None,
@@ -113,7 +113,7 @@ class PdrCrew:
             max_rpm=None,
             max_execution_time=None,
             llm=LLM(
-                model="ollama/qwen2.5:14b",
+                model='ollama/qwen2.5:14b',
                 temperature=0.7,
             ),
         )
@@ -121,7 +121,7 @@ class PdrCrew:
     @agent
     def extrator_de_modo_de_preparo(self) -> Agent:
         return Agent(
-            config=self.agents_config["extrator_de_modo_de_preparo"],
+            config=self.agents_config['extrator_de_modo_de_preparo'],
             tools=[],
             reasoning=False,
             max_reasoning_attempts=None,
@@ -131,7 +131,7 @@ class PdrCrew:
             max_rpm=None,
             max_execution_time=None,
             llm=LLM(
-                model="ollama/qwen2.5:14b",
+                model='ollama/qwen2.5:14b',
                 temperature=0.7,
             ),
         )
@@ -139,7 +139,7 @@ class PdrCrew:
     @agent
     def gerador_de_tags(self) -> Agent:
         return Agent(
-            config=self.agents_config["gerador_de_tags"],
+            config=self.agents_config['gerador_de_tags'],
             tools=[],
             reasoning=False,
             max_reasoning_attempts=None,
@@ -149,7 +149,7 @@ class PdrCrew:
             max_rpm=None,
             max_execution_time=None,
             llm=LLM(
-                model="ollama/qwen2.5:14b",
+                model='ollama/qwen2.5:14b',
                 temperature=0.7,
             ),
         )
@@ -157,42 +157,42 @@ class PdrCrew:
     @task
     def extrair_ingredientes_da_receita(self) -> Task:
         return Task(
-            config=self.tasks_config["extrair_ingredientes_da_receita"],
+            config=self.tasks_config['extrair_ingredientes_da_receita'],
             markdown=False,
         )
 
     @task
     def extrair_titulo_da_receita(self) -> Task:
         return Task(
-            config=self.tasks_config["extrair_titulo_da_receita"],
+            config=self.tasks_config['extrair_titulo_da_receita'],
             markdown=False,
         )
 
     @task
     def extrair_descricao_da_receita(self) -> Task:
         return Task(
-            config=self.tasks_config["extrair_descricao_da_receita"],
+            config=self.tasks_config['extrair_descricao_da_receita'],
             markdown=False,
         )
 
     @task
     def extrair_modo_de_preparo_da_receita(self) -> Task:
         return Task(
-            config=self.tasks_config["extrair_modo_de_preparo_da_receita"],
+            config=self.tasks_config['extrair_modo_de_preparo_da_receita'],
             markdown=False,
         )
 
     @task
     def gerar_tags_da_receita(self) -> Task:
         return Task(
-            config=self.tasks_config["gerar_tags_da_receita"],
+            config=self.tasks_config['gerar_tags_da_receita'],
             markdown=False,
         )
 
     @task
     def converter_medidas_dos_ingredientes(self) -> Task:
         return Task(
-            config=self.tasks_config["converter_medidas_dos_ingredientes"],
+            config=self.tasks_config['converter_medidas_dos_ingredientes'],
             markdown=False,
         )
 
@@ -206,7 +206,7 @@ class PdrCrew:
     @task
     def compilar_receita_final(self) -> Task:
         return Task(
-            config=self.tasks_config["compilar_receita_final"],
+            config=self.tasks_config['compilar_receita_final'],
             markdown=False,
         )
 
@@ -218,11 +218,11 @@ class PdrCrew:
             tasks=self.tasks,  # Automatically created by the @task decorator
             process=Process.sequential,
             verbose=True,
-            chat_llm=LLM(model="ollama/qwen2.5:14b"),
+            chat_llm=LLM(model='ollama/qwen2.5:14b'),
         )
 
     def _load_response_format(self, name):
-        with open(os.path.join(self.base_directory, "config", f"{name}.json")) as f:
+        with open(os.path.join(self.base_directory, 'config', f'{name}.json')) as f:
             json_schema = json.loads(f.read())
 
         return SchemaConverter.build(json_schema)

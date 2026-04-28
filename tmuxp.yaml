@@ -2,11 +2,15 @@ session_name: cdc
 windows:
   - window_name: editor
     panes:
-      - shell_command:
-          - nvim
+      - nvim
   - window_name: opencode
     panes:
+      - shell_command: opencode
+  - window_name: lazydocker
+    layout: even-horizontal
+    panes:
+      - shell_command: lazydocker
       - shell_command:
-          - opencode
-      - shell_command:
-          - lazygit
+  - window_name: lazygit
+    panes:
+      - shell_command: lazygit

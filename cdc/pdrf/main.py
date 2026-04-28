@@ -7,11 +7,10 @@ from pydantic import BaseModel
 
 
 class RecipeState(BaseModel):
-    recipe: str = ""
+    recipe: str = ''
 
 
 class PdrFlow(Flow[RecipeState]):
-
     @start()
     def process_unstructured_recipe(self, recipe: str = None):
         """
@@ -26,7 +25,7 @@ class PdrFlow(Flow[RecipeState]):
             'ingredientes_convertidos': 'sample_value',
             'modo_preparo': 'sample_value',
             'tags': 'sample_value',
-            'receita_texto': '''Bolo de Cenoura com Farinha de Aveia
+            'receita_texto': """Bolo de Cenoura com Farinha de Aveia
 
         15 Minutos Preparo
 
@@ -46,10 +45,12 @@ class PdrFlow(Flow[RecipeState]):
 
             Bata no liquidificador a cenoura, o óleo e os ovos.
             Retire a mistura do liquidificador e coloque em uma vasilha.
-            Acrescente o açúcar, a farinha de aveia, o fermento e as nozes picadas. Mexa delicadamente a receita de bolo de cenoura simples.
+            Acrescente o açúcar, a farinha de aveia, o fermento e as nozes picadas.
+            Mexa delicadamente a receita de bolo de cenoura simples.
             Unte e enfarinhe uma assadeira retangular média.
-            Coloque a massa do bolo de cenoura na assadeira e leve ao forno preaquecido a 200°C por 45 minutos ou até dourar.
-            Agora você já sabe como fazer bolo de cenoura simples!'''
+            Coloque a massa do bolo de cenoura na assadeira e leve ao forno
+            preaquecido a 200°C por 45 minutos ou até dourar.
+            Agora você já sabe como fazer bolo de cenoura simples!""",
         }
         PdrCrew().crew().kickoff(inputs=inputs)
 
@@ -91,23 +92,23 @@ def run_with_trigger():
 
     # Get trigger payload from command line argument
     if len(sys.argv) < 2:
-        raise Exception("No trigger payload provided. Please provide JSON payload as argument.")
+        raise Exception('No trigger payload provided. Please provide JSON payload as argument.')
 
     try:
         trigger_payload = json.loads(sys.argv[1])
     except json.JSONDecodeError:
-        raise Exception("Invalid JSON payload provided as argument")
+        raise Exception('Invalid JSON payload provided as argument')
 
     # Create flow and kickoff with trigger payload
     # The @start() methods will automatically receive crewai_trigger_payload parameter
     pdrf = PdrFlow()
 
     try:
-        result = pdrf.kickoff({"crewai_trigger_payload": trigger_payload})
+        result = pdrf.kickoff({'crewai_trigger_payload': trigger_payload})
         return result
     except Exception as e:
-        raise Exception(f"An error occurred while running the flow with trigger: {e}")
+        raise Exception(f'An error occurred while running the flow with trigger: {e}')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     kickoff()

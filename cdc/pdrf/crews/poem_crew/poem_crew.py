@@ -19,15 +19,15 @@ class PoemCrew:
     # Learn more about YAML configuration files here:
     # Agents: https://docs.crewai.com/concepts/agents#yaml-configuration-recommended
     # Tasks: https://docs.crewai.com/concepts/tasks#yaml-configuration-recommended
-    agents_config = "config/agents.yaml"
-    tasks_config = "config/tasks.yaml"
+    agents_config = 'config/agents.yaml'
+    tasks_config = 'config/tasks.yaml'
 
     # If you would lik to add tools to your crew, you can learn more about it here:
     # https://docs.crewai.com/concepts/agents#agent-tools
     @agent
     def poem_writer(self) -> Agent:
         return Agent(
-            config=self.agents_config["poem_writer"],  # type: ignore[index]
+            config=self.agents_config['poem_writer'],  # type: ignore[index]
         )
 
     # To learn more about structured task outputs,
@@ -36,7 +36,7 @@ class PoemCrew:
     @task
     def write_poem(self) -> Task:
         return Task(
-            config=self.tasks_config["write_poem"],  # type: ignore[index]
+            config=self.tasks_config['write_poem'],  # type: ignore[index]
         )
 
     @crew

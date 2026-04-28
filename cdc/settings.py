@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'django.contrib.staticfiles',
     # libs
-    "steady_queue",
+    'steady_queue',
     'django_extensions',
     'django_browser_reload',
     'modelcluster',
@@ -170,10 +170,10 @@ MEDIA_URL = '/media/'
 
 # settings.py
 TASKS = {
-    "default": {
-        "BACKEND": "steady_queue.backend.SteadyQueueBackend",
-        "QUEUES": ["default"],
-        "OPTIONS": {},
+    'default': {
+        'BACKEND': 'steady_queue.backend.SteadyQueueBackend',
+        'QUEUES': ['default'],
+        'OPTIONS': {},
     }
 }
 # Default primary key field type
