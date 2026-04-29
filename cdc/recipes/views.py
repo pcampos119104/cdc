@@ -22,7 +22,7 @@ class PendingRecipesView(View):
             {
                 'id': recipe.id,
                 'title': recipe.title,
-                'description': recipe.input_description,
+                'description': recipe.raw_input,
             }
             for recipe in pendings
         ]
@@ -41,12 +41,17 @@ class PendingRecipesView(View):
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
 
         recipe_id = data.get('id')
-        processed_desc = data.get('processed_description')
+        ai_response = data.get('ai_response', {})  # Expect JSON with structured data
         tags_str = data.get('tags', '')
 
         try:
             recipe = RecipePage.objects.get(id=recipe_id)
-            recipe.processed_description = processed_desc
+            # Store the raw AI response
+            recipe.raw_ai_response = ai_response
+            # Populate structured fields from AI response
+            recipe.description = ai_response.get('description', '')
+            recipe.directions = ai_response.get('directions', '')
+            recipe.font = ai_response.get('font', '')
             recipe.status = 'final_review'
             if tags_str:
                 tags_list = [tag.strip() for tag in tags_str.split(',') if tag.strip()]

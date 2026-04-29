@@ -3,10 +3,12 @@ from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from taggit.models import TaggedItemBase
-from wagtail.admin.panels import FieldPanel
+from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
 from wagtail.fields import RichTextField
 from wagtail.models import Orderable, Page, Task
 from wagtail.search import index
+from wagtail.snippets.models import register_snippet
+from wagtail.snippets.views.snippets import SnippetViewSet
 
 from cdc.recipes.tasks import process_recipe_with_ai
 
@@ -59,13 +61,22 @@ class RecipePageTag(TaggedItemBase):
 
 
 class RecipePage(Page):
-    input_description = RichTextField(  # Tudo cru aqui: descrição, ingredientes, preparo, fonte
-        verbose_name='Descrição completa (crua)',
-        help_text='Escreva descrição, ingredientes, preparo e fonte. Será processado automaticamente.',
+    raw_input = RichTextField(
+        verbose_name='Entrada bruta',
+        help_text='Texto cru da receita para processamento por IA.',
+        blank=True,
     )
-    processed_description = RichTextField(  # Versão formatada pela IA
-        verbose_name='Descrição processada', blank=True, help_text='Versão final após IA.'
+    raw_ai_response = models.JSONField(
+        blank=True,
+        null=True,
+        verbose_name='Resposta bruta da IA',
+        help_text='JSON retornado pela IA para aprendizado.',
     )
+
+    # Structured fields populated by AI
+    description = models.TextField('descrição', help_text='Breve descrição da receita.', blank=True)
+    directions = RichTextField(verbose_name='preparo', help_text='Passos para o preparo.', blank=True)
+    font = models.CharField('fonte', max_length=200, help_text='Livro de receita, link do youtube e etc.', blank=True)
 
     status = models.CharField(
         max_length=20,
@@ -79,19 +90,23 @@ class RecipePage(Page):
         editable=False,
     )
     tags = ClusterTaggableManager(through=RecipePageTag, blank=True)
-    image = models.ForeignKey('wagtailimages.Image', on_delete=models.PROTECT, related_name='+')
+    image = models.ForeignKey('wagtailimages.Image', on_delete=models.PROTECT, related_name='+', null=True, blank=True)
 
     content_panels = Page.content_panels + [
         FieldPanel('tags'),
-        FieldPanel('input_description'),
-        FieldPanel('processed_description'),
+        FieldPanel('raw_input'),
+        FieldPanel('description'),
+        FieldPanel('directions'),
+        FieldPanel('font'),
         FieldPanel('image'),
+        InlinePanel('ingredients', label='Ingredientes'),
     ]
 
     search_fields = Page.search_fields + [
         index.SearchField('title'),
-        index.SearchField('input_description'),
-        index.SearchField('processed_description'),
+        index.SearchField('raw_input'),
+        index.SearchField('description'),
+        index.SearchField('directions'),
     ]
     parent_page_types = ['recipes.RecipeIndexPage']
     subpage_types = []
@@ -122,3 +137,114 @@ class AIProcessingTask(Task):
     def on_action(self, task_state, user, action_name, **kwargs):
         # Não queremos ação manual aqui
         pass
+
+
+class RecipeIngredient(ClusterableModel):
+    page = ParentalKey('RecipePage', on_delete=models.CASCADE, related_name='ingredients')
+    ingredient = models.ForeignKey('recipes.Ingredient', on_delete=models.PROTECT)
+    metric = models.ForeignKey('recipes.Metric', on_delete=models.PROTECT)
+    quantity = models.DecimalField('Quantidade', max_digits=6, decimal_places=2)
+
+    panels = [
+        FieldPanel('ingredient'),
+        FieldPanel('metric'),
+        FieldPanel('quantity'),
+        MultiFieldPanel(
+            [
+                InlinePanel('ingredient_qualifiers', label='Qualificadores', min_num=0, max_num=5),
+            ],
+            heading='Detalhes do ingrediente',
+            classname='collapsed',
+        ),
+    ]
+
+    def __str__(self):
+        return f'{self.quantity or "?"} {getattr(self.metric, "abbr", "?")} de {getattr(self.ingredient, "name", "?")}'
+
+    @property
+    def qualifier_list(self):
+        """Usado no template se precisar mostrar os qualifiers"""
+        return [iq.qualifier.name for iq in self.detailed_qualifiers.all()]
+
+
+class Ingredient(models.Model):
+    name = models.CharField('Nome', max_length=64, unique=True)
+
+    panels = [
+        FieldPanel('name'),
+    ]
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+
+
+class Metric(models.Model):
+    name = models.CharField('Nome', max_length=30)
+    abbr = models.CharField('Abreviação', max_length=10, help_text='Ex: g, ml, xíc., colher')
+
+    panels = [
+        FieldPanel('name'),
+        FieldPanel('abbr'),
+    ]
+
+    def __str__(self):
+        return self.abbr or self.name
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Métrica'
+        verbose_name_plural = 'Métricas'
+
+
+class Qualifier(models.Model):
+    name = models.CharField('Nome', max_length=64, help_text='Ex: picado, ralado, em cubos, opcional')
+
+    panels = [FieldPanel('name')]
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+
+
+class RecipeIngredientQualifier(ClusterableModel):
+    ingredient = ParentalKey('RecipeIngredient', related_name='ingredient_qualifiers', on_delete=models.CASCADE)
+    qualifier = models.ForeignKey('recipes.Qualifier', on_delete=models.PROTECT)
+
+    panels = [
+        FieldPanel('qualifier'),
+    ]
+
+    def __str__(self):
+        return str(self.qualifier)
+
+
+class IngredientViewSet(SnippetViewSet):
+    model = Ingredient
+    icon = 'snippet'
+    list_display = ['name']
+    search_fields = ['name']
+
+
+class MetricViewSet(SnippetViewSet):
+    model = Metric
+    icon = 'snippet'
+    list_display = ['abbr', 'name']
+    search_fields = ['name', 'abbr']
+
+
+class QualifierViewSet(SnippetViewSet):
+    model = Qualifier
+    icon = 'snippet'
+    list_display = ['name']
+    search_fields = ['name']
+
+
+# Registre assim:
+register_snippet(Ingredient, viewset=IngredientViewSet)
+register_snippet(Metric, viewset=MetricViewSet)
+register_snippet(Qualifier, viewset=QualifierViewSet)
