@@ -1,0 +1,20 @@
+[run]
+source = cdc
+omit =
+    */migrations/*
+    */tests/*
+    */settings.py
+    */manage.py
+    */wsgi.py
+    */asgi.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self\.debug:
+    if settings\.DEBUG:
+    raise AssertionError
+    raise NotImplementedError
+    if 0:
+    if __name__ == .__main__.:
