@@ -38,7 +38,7 @@ def create_recipe_workflow(apps, schema_editor):
     from cdc.recipes.models import AIProcessingTask
 
     ai_task, ai_created = AIProcessingTask.objects.get_or_create(
-        name='AI Processing Task', defaults={'active': True, 'label': 'AI processing task'}
+        name='AI Processing Task', defaults={'active': True}
     )
 
     if ai_created:
@@ -61,6 +61,7 @@ def reverse_migration(apps, schema_editor):
 class Migration(migrations.Migration):
     dependencies = [
         ('recipes', '0011_make_image_nullable'),
+        ('steady_queue', '0001_initial'),
     ]
 
     operations = [
