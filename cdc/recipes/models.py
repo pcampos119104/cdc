@@ -112,10 +112,10 @@ class RecipePage(Page):
     subpage_types = []
 
     def save(self, *args, **kwargs):
-        if self.status != 'published':
-            self.live = False
-        else:
+        if self.status == 'published':
             self.live = True
+        elif self._state.adding:
+            self.live = False
         super().save(*args, **kwargs)
 
 

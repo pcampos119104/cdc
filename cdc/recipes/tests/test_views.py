@@ -10,14 +10,16 @@ from cdc.recipes.models import RecipePage
 class TestPendingRecipesView(WagtailTestUtils, TestCase):
     def setUp(self):
         self.login()
-        # Create root page for Wagtail
         from wagtail.models import Page
+
         self.root_page = Page.objects.get(slug='home')
 
-        # Create index page
         from cdc.recipes.models import RecipeIndexPage
-        self.index_page = RecipeIndexPage(title='Recipes', slug='recipes')
-        self.root_page.add_child(instance=self.index_page)
+
+        self.index_page = RecipeIndexPage.objects.filter(slug='recipes').first()
+        if not self.index_page:
+            self.index_page = RecipeIndexPage(title='Recipes', slug='recipes')
+            self.root_page.add_child(instance=self.index_page)
 
     @patch('cdc.recipes.views.settings')
     def test_get_pending_recipes_success(self, mock_settings):
@@ -62,9 +64,9 @@ class TestPendingRecipesView(WagtailTestUtils, TestCase):
                 'ai_response': {
                     'description': 'AI processed description',
                     'directions': 'AI processed directions',
-                    'font': 'AI processed font'
+                    'font': 'AI processed font',
                 },
-                'tags': 'tag1, tag2'
+                'tags': 'tag1, tag2',
             },
             HTTP_X_API_KEY='test_key',
             content_type='application/json',
