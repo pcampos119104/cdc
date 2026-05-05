@@ -37,3 +37,8 @@ format:
 # Open the tmux stack(lazyvim, opencode, lazygit, and etc.)
 tmux:
     tmuxp load tmuxp.yaml
+
+
+# clean all images and volumes
+gonuke:
+    docker-compose down -v --rmi all
