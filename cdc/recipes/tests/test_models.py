@@ -7,11 +7,13 @@ from wagtail.models import Page
 from wagtail.test.utils import WagtailPageTestCase
 
 from cdc.recipes.models import (
+    AIProcessingTask,
     Ingredient,
     Metric,
     Qualifier,
     RecipeIndexPage,
     RecipeIngredient,
+    RecipeIngredientQualifier,
     RecipePage,
     RecipeTagIndexPage,
 )
@@ -228,12 +230,8 @@ class TestRecipeIngredient(TestCase):
         # Create instance without saving to test the __str__ method logic
         recipe_ingredient = RecipeIngredient(ingredient=self.ingredient, metric=self.metric, quantity=200)
         expected = '200 g de Farinha'
-        # Test the logic without database constraints
-        quantity_str = str(recipe_ingredient.quantity or '?')
-        metric_str = getattr(recipe_ingredient.metric, 'abbr', '?')
-        ingredient_str = getattr(recipe_ingredient.ingredient, 'name', '?')
-        result = f'{quantity_str} {metric_str} de {ingredient_str}'
-        self.assertEqual(result, expected)
+        # Test the __str__ method directly
+        self.assertEqual(str(recipe_ingredient), expected)
 
     def test_recipe_ingredient_str_with_none_quantity(self):
         """Test RecipeIngredient string with None quantity"""
@@ -248,3 +246,48 @@ class TestRecipeIngredient(TestCase):
         # Should have panels defined
         self.assertIsInstance(panels, list)
         self.assertGreater(len(panels), 0)
+
+    def test_recipe_ingredient_qualifier_list(self):
+        """Test RecipeIngredient qualifier_list property"""
+        # Create qualifiers
+        qualifier1 = Qualifier.objects.create(name='Picado')
+        qualifier2 = Qualifier.objects.create(name='Fresco')
+
+        # Create a recipe page to hold the ingredient
+        root_page = Page.objects.get(slug='home')
+        index_page = RecipeIndexPage.objects.filter(slug='receitas').first()
+        if not index_page:
+            index_page = RecipeIndexPage(title='Receitas', slug='receitas')
+            root_page.add_child(instance=index_page)
+        recipe_page = RecipePage(title='Test Recipe', slug='test-recipe')
+        index_page.add_child(instance=recipe_page)
+
+        # Create recipe ingredient
+        recipe_ingredient = RecipeIngredient(page=recipe_page, ingredient=self.ingredient, metric=self.metric, quantity=100)
+        recipe_ingredient.save()
+
+        # Create qualifier instances
+        RecipeIngredientQualifier.objects.create(ingredient=recipe_ingredient, qualifier=qualifier1)
+        RecipeIngredientQualifier.objects.create(ingredient=recipe_ingredient, qualifier=qualifier2)
+
+        # Test the property
+        self.assertEqual(recipe_ingredient.qualifier_list, ['Picado', 'Fresco'])
+
+
+class TestRecipeIngredientQualifier(TestCase):
+    def setUp(self):
+        self.qualifier = Qualifier.objects.create(name='Picado')
+
+    def test_recipe_ingredient_qualifier_str(self):
+        """Test RecipeIngredientQualifier string representation"""
+        # Create instance without saving (since __str__ doesn't need DB)
+        riq = RecipeIngredientQualifier(qualifier=self.qualifier)
+        self.assertEqual(str(riq), 'Picado')
+
+
+class TestAIProcessingTask(TestCase):
+    def test_ai_processing_task_on_action(self):
+        """Test AIProcessingTask on_action method"""
+        task = AIProcessingTask()
+        # Call on_action with dummy args (it does nothing)
+        task.on_action(None, None, 'some_action')  # Should not raise any exception

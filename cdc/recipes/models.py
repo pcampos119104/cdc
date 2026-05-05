@@ -164,7 +164,7 @@ class RecipeIngredient(ClusterableModel):
     @property
     def qualifier_list(self):
         """Usado no template se precisar mostrar os qualifiers"""
-        return [iq.qualifier.name for iq in self.detailed_qualifiers.all()]
+        return [iq.qualifier.name for iq in self.ingredient_qualifiers.all()]
 
 
 class Ingredient(models.Model):
