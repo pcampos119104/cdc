@@ -1,3 +1,5 @@
+"""Tests for workflow setup and execution in recipes."""
+
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -13,7 +15,7 @@ from cdc.recipes.models import (
 
 
 class TestWorkflowSetup(WagtailPageTestCase):
-    """Testes de configuração inicial do workflow"""
+    """Tests for initial workflow setup"""
 
     def setUp(self):
         self.root_page = Page.objects.get(slug='home')
@@ -72,7 +74,7 @@ class TestWorkflowSetup(WagtailPageTestCase):
 
 
 class TestFullWorkflow(WagtailPageTestCase):
-    """Testes do fluxo completo de workflow"""
+    """Tests for the complete workflow flow"""
 
     def setUp(self):
         super().setUp()
@@ -83,6 +85,7 @@ class TestFullWorkflow(WagtailPageTestCase):
             self.index = RecipeIndexPage(title='Receitas', slug='receitas')
             self.root_page.add_child(instance=self.index)
 
+        # Creates test user and group for workflow permissions
         self.superuser = self._create_superuser('superuser')
 
         self.author = self._create_user('author', is_superuser=False)

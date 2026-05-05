@@ -1,3 +1,5 @@
+"""Tests for recipe models, ensuring correct behavior of pages, ingredients, and workflows."""
+
 from unittest.mock import patch
 
 import pytest
@@ -35,7 +37,7 @@ class TestRecipeIndexPage(WagtailPageTestCase):
     def test_recipe_index_page_content_panels(self):
         """Test RecipeIndexPage has intro field"""
         panels = RecipeIndexPage.content_panels
-        # The intro field is passed directly as a string in the content_panels list
+        # Checks that 'intro' panel is included in content_panels
         self.assertIn('intro', panels)
 
     def test_recipe_index_page_context(self):

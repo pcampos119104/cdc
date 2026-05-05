@@ -1,3 +1,5 @@
+"""Tests for recipe API views, including pending recipe handling."""
+
 from unittest.mock import patch
 
 from django.test import TestCase

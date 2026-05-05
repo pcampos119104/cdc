@@ -1,9 +1,17 @@
+"""Asynchronous tasks for processing recipes with AI, including data parsing and workflow updates."""
+
 from django.tasks import task
 from wagtail.models import TaskState
 
 
 @task
 def process_recipe_with_ai(task_state_id):
+    """Processes a recipe with AI based on task ID.
+
+    Retrieves task state, parses mock AI response, populates recipe fields,
+    creates ingredients, and advances workflow.
+    """
+    # Retrieve the task state and associated page to process the recipe
     print('>>>>> process_recipe_with_ai')
     task_state = TaskState.objects.get(id=task_state_id)
     page = task_state.workflow_state.content_object.specific
@@ -17,15 +25,13 @@ def process_recipe_with_ai(task_state_id):
         'font': 'Fonte extraída por IA.',
     }
 
-    # Store raw AI response
+    # Store the raw AI response and populate structured fields from the extracted data
     page.raw_ai_response = mock_ai_response
-
-    # Populate structured fields from mock data
     page.description = mock_ai_response['description']
     page.directions = mock_ai_response['directions']
     page.font = mock_ai_response['font']
 
-    # Create basic ingredients (for mock, create new snippets if needed)
+    # Create or retrieve ingredients and metrics from the AI data, then create RecipeIngredient instances
     from cdc.recipes.models import Ingredient, Metric, RecipeIngredient
 
     for ing_data in mock_ai_response['ingredients']:
@@ -38,5 +44,5 @@ def process_recipe_with_ai(task_state_id):
 
     page.save_revision()
 
-    # avança o workflow automaticamente
+    # Automatically advance the workflow
     task_state.approve(user=None)
