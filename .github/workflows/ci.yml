@@ -9,10 +9,10 @@ env:
 # This jobs will run when a pull request is made for the main branch.
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   # This is the job that is going to run the `just test` command.
@@ -20,7 +20,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       # git clone the repo in this ubuntu runner
       - name: Checkout Code Repository
         uses: actions/checkout@v3
@@ -43,6 +42,7 @@ jobs:
           echo DB_HOST=postgres >> .env
           echo DB_PORT=5432 >> .env
           echo CSRF_TRUSTED_ORIGINS=http://localhost >> .env
+          echo RECIPE_API_KEY=eporihbkla_djfn_a_lksjdnoenb >> .env
           cat .env
 
       - name: Build the Stack
