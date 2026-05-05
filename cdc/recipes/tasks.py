@@ -32,7 +32,11 @@ def process_recipe_with_ai(task_state_id):
     page.font = mock_ai_response['font']
 
     # Create or retrieve ingredients and metrics from the AI data, then create RecipeIngredient instances
-    from cdc.recipes.models import Ingredient, Metric, RecipeIngredient
+    from django.apps import apps
+
+    Ingredient = apps.get_model('recipes', 'Ingredient')
+    Metric = apps.get_model('recipes', 'Metric')
+    RecipeIngredient = apps.get_model('recipes', 'RecipeIngredient')
 
     for ing_data in mock_ai_response['ingredients']:
         # Create or get ingredient

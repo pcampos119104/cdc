@@ -13,8 +13,6 @@ from wagtail.search import index
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet
 
-from cdc.recipes.tasks import process_recipe_with_ai
-
 
 class RecipeIndexPage(Page):
     """Index page for listing recipes, restricting subpages to RecipePage."""
@@ -148,6 +146,8 @@ class AIProcessingTask(Task):
         task_state = super().start(workflow_state, user=user)
 
         # Enqueue the AI processing task
+        from cdc.recipes.tasks import process_recipe_with_ai
+
         process_recipe_with_ai.enqueue(task_state.id)
 
         return task_state
@@ -208,6 +208,27 @@ class Ingredient(models.Model):
         verbose_name_plural = 'Métricas'
 
 
+class Metric(models.Model):
+    """Snippet model for measurement units."""
+
+    name = models.CharField('Nome', max_length=30)
+    abbr = models.CharField('Abreviação', max_length=10, help_text='Ex: g, ml, xíc., colher')
+
+    panels = [
+        FieldPanel('name'),
+        FieldPanel('abbr'),
+    ]
+
+    def __str__(self):
+        """Returns the metric abbreviation or name."""
+        return self.abbr or self.name
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Métrica'
+        verbose_name_plural = 'Métricas'
+
+
 class Qualifier(models.Model):
     """Snippet model for ingredient qualifiers."""
 
@@ -242,18 +263,12 @@ class IngredientViewSet(SnippetViewSet):
     """Wagtail viewset for managing Ingredient snippets."""
 
     model = Ingredient
-    icon = 'snippet'
-    list_display = ['name']
-    search_fields = ['name']
 
 
 class MetricViewSet(SnippetViewSet):
     """Wagtail viewset for managing Metric snippets."""
 
     model = Metric
-    icon = 'snippet'
-    list_display = ['abbr', 'name']
-    search_fields = ['name', 'abbr']
 
 
 class QualifierViewSet(SnippetViewSet):
