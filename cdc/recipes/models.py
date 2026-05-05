@@ -199,8 +199,7 @@ class Ingredient(models.Model):
     ]
 
     def __str__(self):
-        """Returns the metric abbreviation or name."""
-        return self.abbr or self.name
+        return self.name
 
     class Meta:
         ordering = ['name']
