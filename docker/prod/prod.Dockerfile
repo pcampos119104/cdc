@@ -3,8 +3,10 @@ FROM python:3.12-slim AS builder
 
 # Set working directory
 WORKDIR /app
-RUN apk update
-RUN apk add --no-cache uv gcc g++ python3-dev musl-dev linux-headers npm
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends build-essential python3-dev nodejs npm
+RUN rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir uv
 
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
