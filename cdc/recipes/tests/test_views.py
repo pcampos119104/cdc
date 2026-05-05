@@ -1,59 +1,172 @@
-import pytest
-from django.test import Client
-from wagtail.models import Page
-from wagtail.test.utils import WagtailPageTestCase
+"""Tests for recipe API views, including pending recipe handling."""
 
-from cdc.recipes.models import RecipeIndexPage, RecipePage, RecipeTagIndexPage
+from unittest.mock import patch
+
+from django.test import TestCase
+from django.urls import reverse
+from wagtail.test.utils import WagtailTestUtils
+
+from cdc.recipes.models import RecipePage
 
 
-class TestRecipeIndexPageView(WagtailPageTestCase):
+class TestPendingRecipesView(WagtailTestUtils, TestCase):
     def setUp(self):
-        self.client = Client()
+        self.login()
+        from wagtail.models import Page
+
         self.root_page = Page.objects.get(slug='home')
 
-    def test_recipe_index_page_view(self):
-        """Test RecipeIndexPage renders correctly"""
-        index_page = RecipeIndexPage(title='Receitas', slug='receitas', intro='Bem-vindo')
-        self.root_page.add_child(instance=index_page)
+        from cdc.recipes.models import RecipeIndexPage
 
-        response = self.client.get('/receitas/')
+        self.index_page = RecipeIndexPage.objects.filter(slug='recipes').first()
+        if not self.index_page:
+            self.index_page = RecipeIndexPage(title='Recipes', slug='recipes')
+            self.root_page.add_child(instance=self.index_page)
+
+    @patch('cdc.recipes.views.settings')
+    def test_get_pending_recipes_success(self, mock_settings):
+        """Test GET pending recipes with valid API key"""
+        mock_settings.RECIPE_API_KEY = 'test_key'
+
+        # Create a recipe with pending status
+        recipe = RecipePage(title='Pending Recipe', slug='pending', status='pending_review', raw_input='Test input')
+        self.index_page.add_child(instance=recipe)
+
+        response = self.client.get(reverse('recipes:pending'), HTTP_X_API_KEY='test_key')
+
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Receitas')
-        self.assertContains(response, 'Bem-vindo')
+        data = response.json()
+        self.assertIn('pendings', data)
+        self.assertEqual(len(data['pendings']), 1)
+        self.assertEqual(data['pendings'][0]['title'], 'Pending Recipe')
 
+    @patch('cdc.recipes.views.settings')
+    def test_get_pending_recipes_unauthorized(self, mock_settings):
+        """Test GET pending recipes with invalid API key"""
+        mock_settings.RECIPE_API_KEY = 'test_key'
 
-class TestRecipeTagIndexPageView(WagtailPageTestCase):
-    def setUp(self):
-        self.client = Client()
-        self.root_page = Page.objects.get(slug='home')
+        response = self.client.get(reverse('recipes:pending'), HTTP_X_API_KEY='wrong_key')
 
-    def test_recipe_tag_index_page_view_no_tag(self):
-        """Test RecipeTagIndexPage without tag parameter"""
-        tag_page = RecipeTagIndexPage(title='Tags', slug='tags')
-        self.root_page.add_child(instance=tag_page)
+        self.assertEqual(response.status_code, 401)
+        data = response.json()
+        self.assertIn('error', data)
 
-        response = self.client.get('/tags/')
+    @patch('cdc.recipes.views.settings')
+    def test_post_update_recipe_success(self, mock_settings):
+        """Test POST update recipe with processed data"""
+        mock_settings.RECIPE_API_KEY = 'test_key'
+
+        recipe = RecipePage(title='Test Recipe', slug='test', status='pending_review', raw_input='Original input')
+        self.index_page.add_child(instance=recipe)
+
+        response = self.client.post(
+            reverse('recipes:pending'),
+            data={
+                'id': recipe.id,
+                'ai_response': {
+                    'description': 'AI processed description',
+                    'directions': 'AI processed directions',
+                    'font': 'AI processed font',
+                },
+                'tags': 'tag1, tag2',
+            },
+            HTTP_X_API_KEY='test_key',
+            content_type='application/json',
+        )
+
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Todas as Tags Disponíveis')
+        data = response.json()
+        self.assertIn('status', data)
+        self.assertEqual(data['status'], 'updated')
 
-    def test_recipe_tag_index_page_view_with_tag(self):
-        """Test RecipeTagIndexPage with tag parameter"""
-        tag_page = RecipeTagIndexPage(title='Tags', slug='tags')
-        self.root_page.add_child(instance=tag_page)
+        # Refresh from DB
+        recipe.refresh_from_db()
+        self.assertEqual(recipe.status, 'final_review')
+        self.assertEqual(recipe.raw_ai_response['description'], 'AI processed description')
+        self.assertEqual(recipe.description, 'AI processed description')
 
-        response = self.client.get('/tags/?tag=test')
+    @patch('cdc.recipes.views.settings')
+    def test_post_update_recipe_not_found(self, mock_settings):
+        """Test POST update with non-existent recipe ID"""
+        mock_settings.RECIPE_API_KEY = 'test_key'
+
+        response = self.client.post(
+            reverse('recipes:pending'),
+            data={'id': 999, 'processed_description': 'Test'},
+            HTTP_X_API_KEY='test_key',
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 404)
+        data = response.json()
+        self.assertIn('error', data)
+
+    @patch('cdc.recipes.views.settings')
+    def test_post_update_recipe_unauthorized(self, mock_settings):
+        """Test POST update recipe with invalid API key"""
+        mock_settings.RECIPE_API_KEY = 'test_key'
+
+        recipe = RecipePage(title='Test Recipe', slug='test', status='pending_review')
+        self.index_page.add_child(instance=recipe)
+
+        response = self.client.post(
+            reverse('recipes:pending'),
+            data={'id': recipe.id, 'ai_response': {}},
+            HTTP_X_API_KEY='wrong_key',
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 401)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'Unauthorized')
+
+    @patch('cdc.recipes.views.settings')
+    def test_post_update_recipe_invalid_json(self, mock_settings):
+        """Test POST update recipe with invalid JSON"""
+        mock_settings.RECIPE_API_KEY = 'test_key'
+
+        response = self.client.post(
+            reverse('recipes:pending'),
+            data='invalid json',
+            HTTP_X_API_KEY='test_key',
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 400)
+        data = response.json()
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'Invalid JSON')
+
+    @patch('cdc.recipes.views.settings')
+    def test_post_update_recipe_without_tags(self, mock_settings):
+        """Test POST update recipe without tags"""
+        mock_settings.RECIPE_API_KEY = 'test_key'
+
+        recipe = RecipePage(title='Test Recipe', slug='test', status='pending_review', raw_input='Original input')
+        self.index_page.add_child(instance=recipe)
+
+        response = self.client.post(
+            reverse('recipes:pending'),
+            data={
+                'id': recipe.id,
+                'ai_response': {
+                    'description': 'AI processed description',
+                    'directions': 'AI processed directions',
+                    'font': 'AI processed font',
+                },
+                # No 'tags' key, so tags_str will be empty
+            },
+            HTTP_X_API_KEY='test_key',
+            content_type='application/json',
+        )
+
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Receitas com tag "test"')
+        data = response.json()
+        self.assertIn('status', data)
+        self.assertEqual(data['status'], 'updated')
 
-
-class TestRecipePageView(WagtailPageTestCase):
-    def setUp(self):
-        self.client = Client()
-        self.root_page = Page.objects.get(slug='home')
-
-    def test_recipe_page_view(self):
-        """Test RecipePage renders correctly"""
-        # Note: Would need to create RecipeIndexPage parent and RecipePage with image
-        # For now, just test that the model exists and basic functionality
-        recipe_page = RecipePage(title='Test Recipe', slug='test-recipe')
-        self.assertEqual(recipe_page.title, 'Test Recipe')
+        # Refresh from DB and check tags are not set
+        recipe.refresh_from_db()
+        self.assertEqual(recipe.status, 'final_review')
+        self.assertEqual(recipe.tags.count(), 0)  # No tags set

@@ -6,8 +6,11 @@ from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
+from cdc import recipes
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('recipes/', include('cdc.recipes.urls')),
     path('accounts/', include('allauth.urls')),
     path('__reload__/', include('django_browser_reload.urls')),
     path('cms/', include(wagtailadmin_urls)),

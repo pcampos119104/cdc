@@ -14,8 +14,6 @@ import os
 from pathlib import Path
 
 import environ
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,20 +27,15 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', False)
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
-
-sentry_sdk.init(
-    dsn=env.str('SENTRY_DSN', ''),
-    integrations=[DjangoIntegration()],
-    # Add data like request headers and IP for users,
-    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
-    send_default_pii=True,
-)
+RECIPE_API_KEY = env('RECIPE_API_KEY')
 
 # Application definition
 INSTALLED_APPS = [
+    # Wagtail
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
     'wagtail.contrib.settings',
+    'wagtail.workflows',
     'wagtail.embeds',
     'wagtail.sites',
     'wagtail.users',
@@ -52,6 +45,7 @@ INSTALLED_APPS = [
     'wagtail.search',
     'wagtail.admin',
     'wagtail',
+    # Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -59,6 +53,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.postgres',
     'django.contrib.staticfiles',
+    # libs
+    'steady_queue',
     'django_extensions',
     'django_browser_reload',
     'modelcluster',
@@ -66,6 +62,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'django_htmx',
+    # apps
     'cdc.base',
     'cdc.recipes',
 ]
@@ -171,6 +168,14 @@ STATICFILES_DIRS = [BASE_DIR / 'cdc/static']
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+# settings.py
+TASKS = {
+    'default': {
+        'BACKEND': 'steady_queue.backend.SteadyQueueBackend',
+        'QUEUES': ['default'],
+        'OPTIONS': {},
+    }
+}
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -206,7 +211,6 @@ else:
     }
     AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10_000
 

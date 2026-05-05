@@ -1,10 +1,10 @@
 # Pull official base image
-FROM python:3.14.0-alpine3.22 AS builder
+FROM python:3.12-slim AS builder
 
 # Set working directory
 WORKDIR /app
 RUN apk update
-RUN apk add --no-cache gcc python3-dev musl-dev linux-headers curl uv npm
+RUN apk add --no-cache uv gcc g++ python3-dev musl-dev linux-headers npm
 
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
@@ -19,13 +19,13 @@ RUN rm -rf node_modules
 
 # criar o output.css do tailwind
 
-FROM python:3.14.0-alpine3.22
+FROM python:3.12-slim
 WORKDIR /app
 
-COPY ./docker/prod/start.xsh /start.xsh
-RUN sed -i 's/\r$//g' /start.xsh
-RUN chmod +x /start.xsh
+COPY ./docker/prod/start.sh /start.sh
+RUN sed -i 's/\r$//g' /start.sh
+RUN chmod +x /start.sh
 COPY --from=builder /app /app
 ENV PATH="/app/.venv/bin:$PATH"
 
-ENTRYPOINT ["/start.xsh"]
+ENTRYPOINT ["/start.sh"]

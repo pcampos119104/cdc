@@ -2,31 +2,31 @@
 name = "cdc"
 version = "0.1.0"
 description = ""
-authors = [{ name = "Your Name", email = "you@example.com" }]
-requires-python = "~=3.14.0"
+authors = [{ name = "Pedro Campos", email = "pcampos119104@gmail.com" }]
+requires-python = "~=3.12.0"
 readme = "README.md"
 dependencies = [
-    "django>=5.1.6",
-    "django-environ>=0.12.0",
-    "django-allauth>=65.4.1",
-    "django-htmx>=1.22.0",
-    "django-extensions>=3.2.3",
+    "django>=6.0.2",
+    "django-environ>=0.13.0",
+    "django-allauth>=65.7.0",
+    "django-htmx>=1.27.0",
+    "django-extensions>=4.1",
     "django-browser-reload>=1.18.0",
-    "psycopg[binary]>=3.2.4",
-    "whitenoise>=6.9.0",
-    "gunicorn>=23.0.0",
-    "sentry-sdk[django]>=2.32.0",
-    "xonsh>=0.19.9",
-    "wagtail>=7.2",
+    "psycopg[binary]>=3.2.6",
+    "whitenoise>=6.11.0",
+    "gunicorn>=25.1.0",
+    "wagtail>=7.3.1",
     "django-storages[s3]>=1.14.6",
+    "steady-queue>=0.1.8",
 ]
 
 [dependency-groups]
 dev = [
-    "pytest>=8.3.4",
-    "pytest-django>=4.10.0",
-    "ruff>=0.9.6",
-    "marimo>=0.14.6",
+    "pytest>=8.3.5",
+    "pytest-django>=4.11.1",
+    "pytest-cov>=5.0.0",
+    "ruff>=0.15.4",
+    "marimo>=0.13.2",
 ]
 
 [tool.uv]
@@ -38,15 +38,21 @@ build-backend = "hatchling.build"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "cdc.settings"
+addopts = "--cov=cdc --cov-report term-missing --cov-branch --cov-fail-under=80"
 
 # -- find the tests:
 python_files = ["test_*.py", "*_test.py", "testing/python/*.py"]
 
 [tool.ruff]
-# 80 it's the default but nowadays the common sense it's 120.
+# 80 it's the default but nowadays, the common sense it's 120.
 line-length = 120
 # Show an enumeration of all fixed lint violations
 show-fixes = true
+exclude = [
+    "tests",
+    "**migrations/**",
+    "conftest.py",
+]
 
 [tool.ruff.lint]
 # https://docs.astral.sh/ruff/linter/#rule-selection
@@ -56,11 +62,6 @@ select = [
     "I",
     # pycodestyle
     "E",
-]
-exclude = [
-    "tests",
-    "**migrations/**",
-    "conftest.py",
 ]
 
 
