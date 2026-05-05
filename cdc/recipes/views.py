@@ -1,3 +1,5 @@
+"""Views for recipe API interactions, handling pending recipes and AI responses."""
+
 import json
 
 from django.conf import settings
@@ -10,9 +12,12 @@ from .models import RecipePage
 
 
 class PendingRecipesView(View):
+    """API view for retrieving and updating pending recipes with AI processing."""
+
     @method_decorator(csrf_exempt)
     def get(self, request):
-        # Verifique auth (ex: API key simples)
+        """Returns JSON list of pending recipes for authenticated users."""
+        # Check auth (e.g., simple API key)
         api_key = request.headers.get('X-API-Key')
         if api_key != settings.RECIPE_API_KEY:
             return JsonResponse({'error': 'Unauthorized'}, status=401)
@@ -26,15 +31,18 @@ class PendingRecipesView(View):
             }
             for recipe in pendings
         ]
+        # Return JSON with list of pending recipes
         return JsonResponse({'pendings': data})
 
     @method_decorator(csrf_exempt)
     def post(self, request):
-        # Verifique auth
+        """Updates a recipe with AI response data and advances workflow state."""
+        # Check auth
         api_key = request.headers.get('X-API-Key')
         if api_key != settings.RECIPE_API_KEY:
             return JsonResponse({'error': 'Unauthorized'}, status=401)
 
+        # Parse JSON data from request body
         try:
             data = json.loads(request.body)
         except json.JSONDecodeError:
@@ -46,6 +54,7 @@ class PendingRecipesView(View):
 
         try:
             recipe = RecipePage.objects.get(id=recipe_id)
+            # Update recipe with AI response and set status
             # Store the raw AI response
             recipe.raw_ai_response = ai_response
             # Populate structured fields from AI response

@@ -24,6 +24,7 @@ dependencies = [
 dev = [
     "pytest>=8.3.5",
     "pytest-django>=4.11.1",
+    "pytest-cov>=5.0.0",
     "ruff>=0.15.4",
     "marimo>=0.13.2",
 ]
@@ -37,6 +38,7 @@ build-backend = "hatchling.build"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "cdc.settings"
+addopts = "--cov=cdc --cov-report term-missing --cov-branch --cov-fail-under=80"
 
 # -- find the tests:
 python_files = ["test_*.py", "*_test.py", "testing/python/*.py"]
@@ -46,6 +48,11 @@ python_files = ["test_*.py", "*_test.py", "testing/python/*.py"]
 line-length = 120
 # Show an enumeration of all fixed lint violations
 show-fixes = true
+exclude = [
+    "tests",
+    "**migrations/**",
+    "conftest.py",
+]
 
 [tool.ruff.lint]
 # https://docs.astral.sh/ruff/linter/#rule-selection
@@ -55,11 +62,6 @@ select = [
     "I",
     # pycodestyle
     "E",
-]
-exclude = [
-    "tests",
-    "**migrations/**",
-    "conftest.py",
 ]
 
 
