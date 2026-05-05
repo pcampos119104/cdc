@@ -48,6 +48,11 @@ python_files = ["test_*.py", "*_test.py", "testing/python/*.py"]
 line-length = 120
 # Show an enumeration of all fixed lint violations
 show-fixes = true
+exclude = [
+    "tests",
+    "**migrations/**",
+    "conftest.py",
+]
 
 [tool.ruff.lint]
 # https://docs.astral.sh/ruff/linter/#rule-selection
@@ -57,11 +62,6 @@ select = [
     "I",
     # pycodestyle
     "E",
-]
-exclude = [
-    "tests",
-    "**migrations/**",
-    "conftest.py",
 ]
 
 
