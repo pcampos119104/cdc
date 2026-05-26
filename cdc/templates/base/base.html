@@ -39,13 +39,13 @@
         {% endblock %}
     </head>
 
-    <body class="{% block body_class %}{% endblock %}">
+    <body class="min-h-screen flex flex-col {% block body_class %}{% endblock %}">
         {# Remove  wagtailuserbar: #}
 
         {% include "base/_header.html" %}
 
         {# Wrap your block content  within a <main> HTML5 tag: #}
-        <main >
+        <main class="grow flex flex-col">
             {% block content %}{% endblock %}
         </main>
 

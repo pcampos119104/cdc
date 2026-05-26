@@ -293,3 +293,90 @@ class TestAIProcessingTask(TestCase):
         task = AIProcessingTask()
         # Call on_action with dummy args (it does nothing)
         task.on_action(None, None, 'some_action')  # Should not raise any exception
+
+
+class TestRecipePageTemplate(WagtailPageTestCase):
+    """Tests for RecipePage template rendering"""
+
+    def setUp(self):
+        self.root_page = Page.objects.get(slug='home')
+
+        self.index = RecipeIndexPage(title='Recipes', slug='recipes')
+        self.root_page.add_child(instance=self.index)
+
+        self.ingredient = Ingredient.objects.create(name='Farinha')
+        self.metric = Metric.objects.create(name='Gramas', abbr='g')
+
+    def _create_recipe(self, **kwargs):
+        recipe = RecipePage(**kwargs)
+        self.index.add_child(instance=recipe)
+        recipe.save_revision().publish()
+        return recipe
+
+    def test_recipe_page_can_render(self):
+        """Test RecipePage renders successfully"""
+        recipe = self._create_recipe(title='Render Test', slug='render-test')
+        response = self.client.get(recipe.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_recipe_page_displays_description(self):
+        """Test description is displayed on recipe page"""
+        recipe = self._create_recipe(
+            title='Desc Test', slug='desc-test',
+            description='Descricao especial de teste',
+        )
+        response = self.client.get(recipe.url)
+        self.assertContains(response, 'Descricao especial de teste')
+
+    def test_recipe_page_displays_directions(self):
+        """Test directions are displayed on recipe page"""
+        recipe = self._create_recipe(
+            title='Dir Test', slug='dir-test',
+            directions='<p>Misture todos os ingredientes</p>',
+        )
+        response = self.client.get(recipe.url)
+        self.assertContains(response, 'Misture todos os ingredientes')
+
+    def test_recipe_page_displays_font(self):
+        """Test font is displayed on recipe page"""
+        recipe = self._create_recipe(
+            title='Font Test', slug='font-test',
+            font='Livro de receitas da familia',
+        )
+        response = self.client.get(recipe.url)
+        self.assertContains(response, 'Livro de receitas da familia')
+
+    def test_recipe_page_displays_ingredients(self):
+        """Test ingredients are displayed on recipe page"""
+        recipe = self._create_recipe(
+            title='Ing Test', slug='ing-test',
+        )
+        RecipeIngredient.objects.create(
+            page=recipe,
+            ingredient=self.ingredient,
+            metric=self.metric,
+            quantity=200,
+        )
+        response = self.client.get(recipe.url)
+        self.assertContains(response, 'Farinha')
+        self.assertContains(response, '200')
+        self.assertContains(response, 'g')
+
+    def test_recipe_page_displays_tags(self):
+        """Test tags are displayed on recipe page"""
+        recipe = self._create_recipe(
+            title='Tag Test', slug='tag-test',
+        )
+        recipe.tags.add('doce', 'bolo')
+        recipe.save_revision().publish()
+        response = self.client.get(recipe.url)
+        self.assertContains(response, 'doce')
+        self.assertContains(response, 'bolo')
+
+    def test_recipe_page_voltar_link(self):
+        """Test 'Voltar para receitas' link is present"""
+        recipe = self._create_recipe(
+            title='Back Test', slug='back-test',
+        )
+        response = self.client.get(recipe.url)
+        self.assertContains(response, 'Voltar para receitas')
